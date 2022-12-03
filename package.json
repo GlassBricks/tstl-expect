@@ -1,0 +1,27 @@
+{
+  "name": "tstl-jest-expect",
+  "private": true,
+  "version": "1.0.0",
+  "peerDependencies": {
+    "lua-types": "^2.13.1",
+    "typescript-to-lua": "^1.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "busted-tstl": "^0.1.2-rc.0",
+    "eslint": "^8.29.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.26.0",
+    "lua-types": "^2.13.1",
+    "prettier": "^2.8.0",
+    "typescript": "^4.9.3",
+    "typescript-to-lua": "^1.11.1"
+  },
+  "scripts": {
+    "build": "tstl -p tsconfig.json",
+    "test": "yarn run build && busted src"
+  },
+  "packageManager": "yarn@3.3.0"
+}
