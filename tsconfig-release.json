@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "stripInternal": true
+  },
+  "tstl": {
+    "luaTarget": "universal",
+    "buildMode": "library",
+    "luaPlugins": [
+      {
+        "name": "gb-tstl-utils/plugin",
+        "simplifyDelete": true,
+        "warnUseNil": true,
+        "warnUseDoubleEquals": true
+      }
+    ]
+  },
+  "exclude": [
+    "node_modules", "dist", "src/spec", "src/types.ts"
+  ]
+}

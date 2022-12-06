@@ -1,5 +1,5 @@
 {
-    "trailingComma": "all",
-    "noSemi": true,
-    "printWidth": 120,
+  "trailingComma": "all",
+  "semi": false,
+  "printWidth": 120
 }

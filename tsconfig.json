@@ -4,18 +4,32 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "target": "esnext",
-    "lib": ["esnext"],
-    "types": ["lua-types/5.1", "busted-tstl"],
+    "lib": [
+      "esnext"
+    ],
+    "types": [
+      "lua-types/5.1", "busted-tstl", "gb-tstl-utils"
+    ],
     "rootDir": "src",
-    "outDir": "src",
+    "outDir": "dist",
     "strict": true,
-    "noImplicitOverride": true,
-    "skipLibCheck": true
+    "noImplicitOverride": true
   },
   "tstl": {
     "luaTarget": "universal",
-    "buildMode": "library"
+//    "buildMode": "library",
+    "noResolvePaths": ["busted.runner", "luarocks.loader"],
+    "luaPlugins": [
+      {
+        "name": "gb-tstl-utils/plugin",
+        "simplifyDelete": true,
+        "warnUseNil": true,
+        "warnUseDoubleEquals": true
+      }
+    ]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": [],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": []
 }

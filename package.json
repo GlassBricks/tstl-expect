@@ -1,27 +1,40 @@
 {
-  "name": "tstl-jest-expect",
+  "name": "tstl-expect",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "types": "./dist/index",
+  "files": [
+    "dist/**/*.d.ts",
+    "dist/**/*.lua"
+  ],
   "peerDependencies": {
     "lua-types": "^2.13.1",
-    "typescript-to-lua": "^1.0.0"
+    "typescript-to-lua": "^1.11.1"
   },
   "devDependencies": {
+    "@types/node": "^18.11.11",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "busted-tstl": "^0.1.2-rc.0",
+    "del-cli": "^5.0.0",
     "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^3.5.2",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "gb-tstl-utils": "^1.0.2",
     "lua-types": "^2.13.1",
     "prettier": "^2.8.0",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.3",
     "typescript-to-lua": "^1.11.1"
   },
   "scripts": {
     "build": "tstl -p tsconfig.json",
-    "test": "yarn run build && busted src"
+    "test": "yarn run build && busted -C dist",
+    "clean": "del-cli dist",
+    "build:release": "tstl -p tsconfig-release.json"
   },
   "packageManager": "yarn@3.3.0"
 }
