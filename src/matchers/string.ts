@@ -1,8 +1,8 @@
 import { prettyPrint } from "../pretty-print-and-diff"
 import { assertIsString } from "./utils"
-import { AssertionContext } from "../types"
+import { MatcherContext } from "../types"
 
-export function match(this: AssertionContext, received: unknown, expected: unknown): void {
+export function match(this: MatcherContext, received: unknown, expected: unknown): void {
   assertIsString(this, received, "Received")
   assertIsString(this, expected, "Expected")
 
@@ -15,7 +15,7 @@ export function match(this: AssertionContext, received: unknown, expected: unkno
   }
 }
 
-export function stringInclude(this: AssertionContext, received: unknown, expected: unknown): void {
+export function stringInclude(this: MatcherContext, received: unknown, expected: unknown): void {
   if (typeof received == "string") {
     assertIsString(this, expected, "Expected")
     const pass = received.includes(expected)

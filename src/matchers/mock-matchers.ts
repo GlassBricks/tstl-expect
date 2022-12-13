@@ -1,9 +1,9 @@
-import { AssertionContext, BaseMock, CalledParams } from "../types"
+import { BaseMock, CalledParams, MatcherContext } from "../types"
 import { isMock } from "../mock"
 import { deepCompare, getDiffString, prettyPrint } from "../pretty-print-and-diff"
 import { assertIsNonNegativeInteger } from "./utils"
 
-function assertIsMock(context: AssertionContext, received: unknown): asserts received is BaseMock<any> {
+function assertIsMock(context: MatcherContext, received: unknown): asserts received is BaseMock<any> {
   if (!isMock(received)) {
     context.fail(`Received value should be a mock.\Received: ${prettyPrint(received)}`)
   }
@@ -128,7 +128,7 @@ function printCallsAtIndicesComparing(
   )
 }
 
-export function called(this: AssertionContext, received: unknown, numTimes?: unknown): void {
+export function called(this: MatcherContext, received: unknown, numTimes?: unknown): void {
   if (numTimes != nil) {
     return calledTimes.call(this, received, numTimes)
   }
@@ -151,7 +151,7 @@ export function called(this: AssertionContext, received: unknown, numTimes?: unk
   }
 }
 
-export function calledTimes(this: AssertionContext, received: unknown, numTimes: unknown): void {
+export function calledTimes(this: MatcherContext, received: unknown, numTimes: unknown): void {
   assertIsNonNegativeInteger(this, numTimes, "Expected")
   assertIsMock(this, received)
   const pass = received.numCalls == numTimes
@@ -176,7 +176,7 @@ export function calledTimes(this: AssertionContext, received: unknown, numTimes:
     )
   }
 }
-export function calledWith(this: AssertionContext, received: unknown, ...expectedArgs: unknown[]): void {
+export function calledWith(this: MatcherContext, received: unknown, ...expectedArgs: unknown[]): void {
   assertIsMock(this, received)
   const expected = [...expectedArgs]
 
@@ -210,7 +210,7 @@ export function calledWith(this: AssertionContext, received: unknown, ...expecte
   }
 }
 
-export function lastCalledWith(this: AssertionContext, received: unknown, ...expectedArgs: unknown[]): void {
+export function lastCalledWith(this: MatcherContext, received: unknown, ...expectedArgs: unknown[]): void {
   assertIsMock(this, received)
 
   const { numCalls, calls, lastCall } = received
@@ -241,7 +241,7 @@ export function lastCalledWith(this: AssertionContext, received: unknown, ...exp
   }
 }
 
-export function nthCalledWith(this: AssertionContext, received: unknown, n: unknown, ...expectedArgs: unknown[]): void {
+export function nthCalledWith(this: MatcherContext, received: unknown, n: unknown, ...expectedArgs: unknown[]): void {
   assertIsNonNegativeInteger(this, n, "Nth call")
   assertIsMock(this, received)
 
@@ -320,7 +320,7 @@ function printReturnValuesAtIndicesComparing(
   return printValuesAtIndices(values, len, indices, (v) => getReturnDiff(expected, v), "return values", highlightIndex)
 }
 
-export function returnedWith(this: AssertionContext, received: unknown, expected: unknown): void {
+export function returnedWith(this: MatcherContext, received: unknown, expected: unknown): void {
   assertIsMock(this, received)
   const { numCalls, returnValues } = received
   // const matchingIndex = returnValues.findIndex((returnValue) => deepCompare(expected, returnValue))
@@ -359,7 +359,7 @@ export function returnedWith(this: AssertionContext, received: unknown, expected
   }
 }
 
-export function lastReturnedWith(this: AssertionContext, received: unknown, expected: unknown): void {
+export function lastReturnedWith(this: MatcherContext, received: unknown, expected: unknown): void {
   assertIsMock(this, received)
   const { numCalls, returnValues } = received
   if (numCalls == 0) {
@@ -390,7 +390,7 @@ export function lastReturnedWith(this: AssertionContext, received: unknown, expe
   }
 }
 
-export function nthReturnedWith(this: AssertionContext, received: unknown, n: unknown, expected: unknown): void {
+export function nthReturnedWith(this: MatcherContext, received: unknown, n: unknown, expected: unknown): void {
   assertIsNonNegativeInteger(this, n, "Nth call")
   assertIsMock(this, received)
   const { numCalls, returnValues } = received

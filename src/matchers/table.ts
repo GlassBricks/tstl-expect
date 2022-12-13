@@ -2,9 +2,9 @@
 
 import { deepCompare, prettyPrint } from "../pretty-print-and-diff"
 import { assertIsNumber, assertNotNil } from "./utils"
-import { AssertionContext } from "../types"
+import { MatcherContext } from "../types"
 
-export function length(this: AssertionContext, received: unknown, expected: unknown): void {
+export function length(this: MatcherContext, received: unknown, expected: unknown): void {
   assertIsNumber(this, expected, "Expected")
   let length: number
   if (type(received) == "string") {
@@ -23,7 +23,7 @@ export function length(this: AssertionContext, received: unknown, expected: unkn
   )
 }
 
-export function haveKey(this: AssertionContext, received: unknown, expected: unknown): void {
+export function haveKey(this: MatcherContext, received: unknown, expected: unknown): void {
   assertNotNil(this, expected, "Received")
   const pass = type(received) == "table" && (received as LuaTable).has(expected)
   if (pass != this.isNot) return
@@ -33,7 +33,7 @@ export function haveKey(this: AssertionContext, received: unknown, expected: unk
   )
 }
 
-export function contain(this: AssertionContext, received: unknown, expected: unknown): void {
+export function contain(this: MatcherContext, received: unknown, expected: unknown): void {
   let pass = false
   const receivedType = type(received)
   if (receivedType == "table" || receivedType == "string") {
@@ -50,7 +50,7 @@ export function contain(this: AssertionContext, received: unknown, expected: unk
   )
 }
 
-export function containEqual(this: AssertionContext, received: unknown, expected: unknown): void {
+export function containEqual(this: MatcherContext, received: unknown, expected: unknown): void {
   let pass = false
   for (const value of received as Iterable<any>) {
     if (deepCompare(expected, value)) {

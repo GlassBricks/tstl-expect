@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 /**
- * Properties on assertions that provide a fluent interface.
+ * Properties on chaining that provide a fluent interface.
+ *
+ * These properties all return the chaining object.
  */
-export interface AssertionChaining {
+export interface MatcherChaining {
   readonly to: this
   readonly be: this
   readonly been: this
@@ -24,11 +26,11 @@ export interface AssertionChaining {
 }
 
 /**
- * The context given to custom assertions.
+ * The context given to custom matchers.
  */
-export interface AssertionContext {
+export interface MatcherContext {
   /**
-   * If true, the assertion is negated.
+   * If true, the matcher is negated.
    */
   readonly isNot: boolean
 
@@ -50,21 +52,21 @@ export interface AssertionContext {
   fail(message?: string, comment?: string, expected?: string, received?: string): never
 
   /**
-   * Creates a new chained assertion with the given value.
+   * Creates a new chained matcher with the given value.
    *
-   * The new assertion will have the matcher hint starting with the same words as this assertion.
+   * The new matcher will have a matcher hint, starting with the same words as the current one.
    */
-  chainAssertion<T>(value: T): Assertion<T>
+  chainMatcher<T>(value: T): Matchers<T>
 }
 
 /** A Custom assertion method. */
-export type AssertionMethod<T> = (this: AssertionContext, subject: T, ...args: any[]) => void | unknown
-export type AssertionMethods = Record<string, AssertionMethod<any>>
+export type MatcherMethod<T> = (this: MatcherContext, subject: T, ...args: any[]) => void | unknown
+export type MatcherMethods = Record<string, MatcherMethod<any>>
 
 /**
  * An assertion object.
  */
-export interface Assertion<T> extends AssertionChaining {
+export interface Matchers<T> extends MatcherChaining {
   /** Inverts the assertion. */
   not: this
 
@@ -84,7 +86,7 @@ export interface Assertion<T> extends AssertionChaining {
 export type LuaType = "number" | "string" | "boolean" | "table" | "function" | "userdata" | "thread" | "nil"
 export type TstlClass = Function
 
-export interface BuiltinAssertions {
+export interface BuiltinMatchers {
   /**
    * Passes if this equals the expected value, using rawequal equality.
    */
@@ -156,22 +158,22 @@ export interface BuiltinAssertions {
    *
    * Default delta is 0.01.
    */
-  closeTo(this: Assertion<number>, expected: number, delta?: number): this
+  closeTo(this: Matchers<number>, expected: number, delta?: number): this
 
   /** Passes if this is a number and is greater than the expected value. */
-  gt(this: Assertion<number>, expected: number): this
+  gt(this: Matchers<number>, expected: number): this
   /** Passes if this is a number and is greater than or equal to the expected value. */
-  gte(this: Assertion<number>, expected: number): this
+  gte(this: Matchers<number>, expected: number): this
   /** Passes if this is a number and is less than the expected value. */
-  lt(this: Assertion<number>, expected: number): this
+  lt(this: Matchers<number>, expected: number): this
   /** Passes if this is a number and is less than or equal to the expected value. */
-  lte(this: Assertion<number>, expected: number): this
+  lte(this: Matchers<number>, expected: number): this
 
   /** Passes if this is NaN. */
-  NaN(this: Assertion<number>): this
+  NaN(this: Matchers<number>): this
 
   /** Passes if this is a string or table, and its length (as returned by #) is equal to the expected value. */
-  length(this: Assertion<string | readonly any[] | LuaTable | Record<number, any>>, expected: number): this
+  length(this: Matchers<string | readonly any[] | LuaTable | Record<number, any>>, expected: number): this
 
   /**
    * Passes if this is a function, and throws an error when called.
@@ -179,15 +181,15 @@ export interface BuiltinAssertions {
    *
    * Returns a new Assertion on the thrown error, or the returned value if this is negated.
    */
-  error(this: Assertion<() => unknown>, message?: string | unknown): Assertion<unknown>
+  error(this: Matchers<() => unknown>, message?: string | unknown): Matchers<unknown>
   /**
    * Alias for {@link error}
    */
-  throw(this: Assertion<() => unknown>, message?: string | unknown): Assertion<unknown>
+  throw(this: Matchers<() => unknown>, message?: string | unknown): Matchers<unknown>
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface,@typescript-eslint/no-unused-vars
-export interface Assertion<T> extends BuiltinAssertions {}
+export interface Matchers<T> extends BuiltinMatchers {}
 
 /** @noSelf */
 export interface MatcherFuncs {
@@ -227,7 +229,7 @@ export interface BuiltinExpectMatchers {
   /**
    * Matches objects (table) that match the given table.
    *
-   * Similar to {@link Assertion.matchTable}; allows extra keys and deeply compares tables.
+   * Similar to {@link Matchers.matchTable}; allows extra keys and deeply compares tables.
    */
   tableContaining(expected: object): Matcher
 
@@ -263,11 +265,11 @@ export type InvertedExpectMatchers = Omit<BuiltinExpectMatchers, "anything">
  * The type for the `expect` function.
  */
 export interface ExpectObj extends ExpectMatchers {
-  <T>(this: void, subject: T): Assertion<T>
+  <T>(this: void, subject: T): Matchers<T>
   not: InvertedExpectMatchers
 
   /** Adds custom matchers. */
-  extend(matchers: AssertionMethods): void
+  extend(matchers: MatcherMethods): void
 }
 
 type AnyFunction = (...args: any) => any
@@ -390,23 +392,23 @@ export interface MockNoSelf<F extends (this: void, ...args: any) => any> extends
   invokesOnce(fn: F): this
 }
 
-export interface BuiltinAssertions {
+export interface BuiltinMatchers {
   /** Passes if the given mock has been called at least once. */
-  called<F extends AnyFunction>(this: Assertion<BaseMock<F>>): this
+  called<F extends AnyFunction>(this: Matchers<BaseMock<F>>): this
   /** Passes if the given mock has been called the given number of times. */
-  calledTimes(this: Assertion<BaseMock<AnyFunction>>, expected: number): this
+  calledTimes(this: Matchers<BaseMock<AnyFunction>>, expected: number): this
   /**
    * Passes if the given mock has been called with the given arguments.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  calledWith<F extends AnyFunction>(this: Assertion<BaseMock<F>>, ...args: Parameters<F>): this
+  calledWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, ...args: Parameters<F>): this
   /**
    * Passes if the last call to the given mock has the given arguments.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  lastCalledWith<F extends AnyFunction>(this: Assertion<BaseMock<F>>, ...args: Parameters<F>): this
+  lastCalledWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, ...args: Parameters<F>): this
   /**
    * Passes if the nth call to the given mock has the given arguments.
    *
@@ -414,7 +416,7 @@ export interface BuiltinAssertions {
    *
    * Note: if this mock has not been yet called n times, this will fail regardless of if this assertion is negated or not.
    */
-  nthCalledWith<F extends AnyFunction>(this: Assertion<BaseMock<F>>, n: number, ...args: Parameters<F>): this
+  nthCalledWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, n: number, ...args: Parameters<F>): this
 
   /**
    * Passes if the given mock has returned with the given value.
@@ -422,13 +424,13 @@ export interface BuiltinAssertions {
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
 
-  returnedWith<F extends AnyFunction>(this: Assertion<BaseMock<F>>, value: ReturnType<F>): this
+  returnedWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, value: ReturnType<F>): this
   /**
    * Passes if the last call to the given mock has returned with the given value.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  lastReturnedWith<F extends AnyFunction>(this: Assertion<BaseMock<F>>, value: ReturnType<F>): this
+  lastReturnedWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, value: ReturnType<F>): this
 
   /**
    * Passes if the nth call to the given mock has returned with the given value.
@@ -437,5 +439,5 @@ export interface BuiltinAssertions {
    *
    * Note: if this mock has not been yet called n times, this will fail regardless of if this assertion is negated or not.
    */
-  nthReturnedWith<F extends AnyFunction>(this: Assertion<BaseMock<F>>, n: number, value: ReturnType<F>): this
+  nthReturnedWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, n: number, value: ReturnType<F>): this
 }

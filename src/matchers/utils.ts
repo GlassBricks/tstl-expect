@@ -1,24 +1,24 @@
-import { AssertionContext } from "../types"
+import { MatcherContext } from "../types"
 
-export function assertIsString(context: AssertionContext, value: unknown, part: string): asserts value is string {
+export function assertIsString(context: MatcherContext, value: unknown, part: string): asserts value is string {
   if (typeof value != "string") {
     context.fail(`${part} value must be a string, got a ${type(value)}`)
   }
 }
-export function assertIsNumber(context: AssertionContext, value: unknown, part: string): asserts value is number {
+export function assertIsNumber(context: MatcherContext, value: unknown, part: string): asserts value is number {
   if (typeof value != "number") {
     context.fail(`${part} value must be a number, got a ${type(value)}`)
   }
 }
 
-export function assertNotNil(context: AssertionContext, value: unknown, part: string): asserts value is AnyNotNil {
+export function assertNotNil(context: MatcherContext, value: unknown, part: string): asserts value is AnyNotNil {
   if (value == nil) {
     context.fail(`${part} value must not be nil`)
   }
 }
 
 export function assertIsNonNegativeInteger(
-  context: AssertionContext,
+  context: MatcherContext,
   value: unknown,
   part: string,
 ): asserts value is number {
@@ -29,11 +29,7 @@ export function assertIsNonNegativeInteger(
 }
 
 export type AnyFunction = (this: void, ...args: any[]) => any
-export function assertIsFunction(
-  context: AssertionContext,
-  value: unknown,
-  part: string,
-): asserts value is AnyFunction {
+export function assertIsFunction(context: MatcherContext, value: unknown, part: string): asserts value is AnyFunction {
   if (typeof value != "function") {
     context.fail(`${part} value must be a function, got a ${type(value)}`)
   }

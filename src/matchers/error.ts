@@ -1,8 +1,8 @@
 import { assertIsFunction } from "./utils"
 import { deepCompare, getDiffString, prettyPrint } from "../pretty-print-and-diff"
-import { Assertion, AssertionContext } from "../types"
+import { MatcherContext, Matchers } from "../types"
 
-export function toThrow(this: AssertionContext, received: unknown, value?: unknown): Assertion<unknown> {
+export function toThrow(this: MatcherContext, received: unknown, value?: unknown): Matchers<unknown> {
   assertIsFunction(this, received, "Received")
   const [success, result] = pcall(received)
   if (value == nil) {
@@ -12,10 +12,10 @@ export function toThrow(this: AssertionContext, received: unknown, value?: unkno
   } else {
     assertThrownWithValue(this, success, result, value)
   }
-  return this.chainAssertion(result)
+  return this.chainMatcher(result)
 }
 
-function assertThrown(context: AssertionContext, success: boolean, result: unknown): void {
+function assertThrown(context: MatcherContext, success: boolean, result: unknown): void {
   const pass = !success
   if (pass != context.isNot) return
   if (context.isNot) {
@@ -36,7 +36,7 @@ Returned value: ${prettyPrint(result)}`,
   }
 }
 
-function assertThrownWithMessage(context: AssertionContext, success: boolean, result: unknown, message: string): void {
+function assertThrownWithMessage(context: MatcherContext, success: boolean, result: unknown, message: string): void {
   const pass = !success && typeof result == "string" && result.includes(message)
   if (pass != context.isNot) return
   if (context.isNot) {
@@ -54,7 +54,7 @@ function assertThrownWithMessage(context: AssertionContext, success: boolean, re
   }
 }
 
-function assertThrownWithValue(context: AssertionContext, success: boolean, result: unknown, value: unknown): void {
+function assertThrownWithValue(context: MatcherContext, success: boolean, result: unknown, value: unknown): void {
   const pass = !success && deepCompare(value, result)
   if (pass != context.isNot) return
   if (context.isNot) {

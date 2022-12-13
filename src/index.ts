@@ -1,7 +1,7 @@
 /** @noSelfInFile */
 
-import { extend, newAssertion } from "./expect"
-import { createInvertedFactory } from "./matcher"
+import { extend, newMatcher } from "./expect"
+import { createInvertedFactory } from "./asymmetric-matcher"
 import {
   allMatcher,
   any,
@@ -12,11 +12,11 @@ import {
   stringContaining,
   stringMatching,
   tableContaining,
-} from "./matchers"
-import { Assertion, BuiltinExpectMatchers, ExpectObj, InvertedExpectMatchers } from "./types"
+} from "./asymmetric-matchers"
+import { BuiltinExpectMatchers, ExpectObj, InvertedExpectMatchers, Matchers } from "./types"
 
-const expect = function expect<T>(this: void, subject: T): Assertion<T> {
-  return newAssertion(subject)
+const expect = function expect<T>(this: void, subject: T): Matchers<T> {
+  return newMatcher(subject)
 }
 expect.extend = extend
 
@@ -43,5 +43,5 @@ expect.not = inverted as InvertedExpectMatchers
 
 export default expect as ExpectObj
 export * from "./types"
-export * from "./matcher"
+export * from "./asymmetric-matcher"
 export * from "./mock"

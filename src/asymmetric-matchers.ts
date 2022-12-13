@@ -1,5 +1,5 @@
 /** @noSelfInFile */
-import { _createInternalMatcher } from "./matcher"
+import { _createInternalMatcher } from "./asymmetric-matcher"
 import { deepCompare, prettyPrint } from "./pretty-print-and-diff"
 import { isTstlClass } from "./utils"
 import { LuaType, Matcher, TstlClass } from "./types"

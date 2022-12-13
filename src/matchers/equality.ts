@@ -1,8 +1,8 @@
 import { getDiffString, prettyPrint } from "../pretty-print-and-diff"
 import { isPrimitiveType, isTstlClass } from "../utils"
-import { AssertionContext } from "../types"
+import { MatcherContext } from "../types"
 
-export function toBe(this: AssertionContext, received: unknown, expected: unknown): void {
+export function toBe(this: MatcherContext, received: unknown, expected: unknown): void {
   const pass = rawequal(received, expected)
   if (pass != this.isNot) return
 
@@ -25,7 +25,7 @@ export function toBe(this: AssertionContext, received: unknown, expected: unknow
   }
 }
 
-export function equal(this: AssertionContext, received: unknown, expected: unknown): void {
+export function equal(this: MatcherContext, received: unknown, expected: unknown): void {
   const diffString = getDiffString(expected, received, false)
   const pass = diffString == nil
   if (pass != this.isNot) return
@@ -36,7 +36,7 @@ export function equal(this: AssertionContext, received: unknown, expected: unkno
   }
 }
 
-export function matchTable(this: AssertionContext, received: unknown, expected: unknown): void {
+export function matchTable(this: MatcherContext, received: unknown, expected: unknown): void {
   const diffString = getDiffString(expected, received, true)
   const pass = diffString == nil
   if (pass != this.isNot) return
@@ -47,7 +47,7 @@ export function matchTable(this: AssertionContext, received: unknown, expected: 
   }
 }
 
-export function a(this: AssertionContext, received: unknown, expected: unknown): void {
+export function a(this: MatcherContext, received: unknown, expected: unknown): void {
   if (type(expected) == "string") {
     const pass = type(received) == expected
     if (pass != this.isNot) return
@@ -64,10 +64,10 @@ export function a(this: AssertionContext, received: unknown, expected: unknown):
   }
 }
 
-function simplePredicateAssertion(
-  fn: (this: AssertionContext, received: unknown) => boolean,
-): (this: AssertionContext, received: unknown) => void {
-  return function (this: AssertionContext, received: unknown) {
+function simplePredicateMatcher(
+  fn: (this: MatcherContext, received: unknown) => boolean,
+): (this: MatcherContext, received: unknown) => void {
+  return function (this: MatcherContext, received: unknown) {
     const pass = fn.call(this, received)
     if (pass == this.isNot) {
       this.fail(`Received: ${prettyPrint(received)}`, nil, "")
@@ -75,7 +75,7 @@ function simplePredicateAssertion(
   }
 }
 
-export const any = simplePredicateAssertion((x) => x != nil)
-export const nilFn = simplePredicateAssertion((x) => x == nil)
-export const truthy = simplePredicateAssertion((x) => !!x)
-export const falsy = simplePredicateAssertion((x) => !x)
+export const any = simplePredicateMatcher((x) => x != nil)
+export const nilFn = simplePredicateMatcher((x) => x == nil)
+export const truthy = simplePredicateMatcher((x) => !!x)
+export const falsy = simplePredicateMatcher((x) => !x)

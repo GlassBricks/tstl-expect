@@ -1,6 +1,6 @@
 /** @noSelfInFile */
 
-import { isMatcher } from "./matcher"
+import { isMatcher } from "./asymmetric-matcher"
 
 const INDENT = "  "
 const MAX_SINGLE_LINE_KEYS = 3

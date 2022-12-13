@@ -1,16 +1,9 @@
-import { a, any, equal, falsy, matchTable, nilFn, toBe, truthy } from "./assertions/equality"
-import { match, stringInclude } from "./assertions/string"
-import { closeTo, gt, gte, isNan, lt, lte } from "./assertions/numeric"
-import { contain, containEqual, haveKey, length } from "./assertions/table"
-import { toThrow } from "./assertions/error"
-import {
-  Assertion,
-  AssertionChaining,
-  AssertionContext,
-  AssertionMethod,
-  AssertionMethods,
-  BuiltinAssertions,
-} from "./types"
+import { a, any, equal, falsy, matchTable, nilFn, toBe, truthy } from "./matchers/equality"
+import { match, stringInclude } from "./matchers/string"
+import { closeTo, gt, gte, isNan, lt, lte } from "./matchers/numeric"
+import { contain, containEqual, haveKey, length } from "./matchers/table"
+import { toThrow } from "./matchers/error"
+import { BuiltinMatchers, MatcherChaining, MatcherContext, MatcherMethod, MatcherMethods, Matchers } from "./types"
 import {
   called,
   calledTimes,
@@ -20,17 +13,17 @@ import {
   nthCalledWith,
   nthReturnedWith,
   returnedWith,
-} from "./assertions/mock-assertions"
+} from "./matchers/mock-matchers"
 
-const chainingMethods = keySet<AssertionChaining>()
+const chainingMethods = keySet<MatcherChaining>()
 
-type WrappedAssertionMethod = (this: InternalAssertion, ...args: any[]) => void | unknown
+type WrappedMatcherMethod = (this: InternalMatcher, ...args: any[]) => void | unknown
 
-const assertionMethods = new LuaMap<string, WrappedAssertionMethod>()
+const matcherMethods = new LuaMap<string, WrappedMatcherMethod>()
 
 const TOBE_MATCHER = "toBe"
 
-class InternalAssertionContext implements AssertionContext {
+class InternalMatcherContext implements MatcherContext {
   words: string[] = []
   isNot = false
   constructor(public subject: unknown) {}
@@ -46,14 +39,14 @@ class InternalAssertionContext implements AssertionContext {
     // level 1: here, 2: fail, 3: assertion, 4: user
   }
 
-  chainAssertion<T>(value: T): Assertion<T> {
-    return newChainedAssertion(this, value)
+  chainMatcher<T>(value: T): Matchers<T> {
+    return newChainedMatcher(this, value)
   }
 }
-interface InternalAssertion {
-  _context: InternalAssertionContext
+interface InternalMatcher {
+  _context: InternalMatcherContext
 }
-const assertionMt: LuaMetatable<InternalAssertion> = {
+const matcherMt: LuaMetatable<InternalMatcher> = {
   __index(key: string) {
     const context = this._context
     if (key in chainingMethods) {
@@ -65,7 +58,7 @@ const assertionMt: LuaMetatable<InternalAssertion> = {
       context.words.push(key)
       return this
     }
-    const method = assertionMethods.get(key)
+    const method = matcherMethods.get(key)
     if (method) {
       context.words.push(key)
       return method
@@ -75,50 +68,50 @@ const assertionMt: LuaMetatable<InternalAssertion> = {
     }
     return nil
   },
-  __call(this: InternalAssertion, expected: unknown) {
-    assertionMethods.get(TOBE_MATCHER)!.call(this, expected)
+  __call(this: InternalMatcher, expected: unknown) {
+    matcherMethods.get(TOBE_MATCHER)!.call(this, expected)
   },
 }
 
-export function newAssertion<T>(subject: T): Assertion<T> {
-  const assertion: InternalAssertion = { _context: new InternalAssertionContext(subject) }
-  return setmetatable(assertion, assertionMt) as unknown as Assertion<T>
+export function newMatcher<T>(subject: T): Matchers<T> {
+  const assertion: InternalMatcher = { _context: new InternalMatcherContext(subject) }
+  return setmetatable(assertion, matcherMt) as unknown as Matchers<T>
 }
 
-function newChainedAssertion<T>(context: InternalAssertionContext, subject: T): Assertion<T> {
-  const newContext = new InternalAssertionContext(subject)
+function newChainedMatcher<T>(context: InternalMatcherContext, subject: T): Matchers<T> {
+  const newContext = new InternalMatcherContext(subject)
   const words = (newContext.words = context.words)
   words[words.length - 1] = words[words.length - 1] + "()"
-  const assertion: InternalAssertion = { _context: newContext }
-  return setmetatable(assertion, assertionMt) as unknown as Assertion<T>
+  const assertion: InternalMatcher = { _context: newContext }
+  return setmetatable(assertion, matcherMt) as unknown as Matchers<T>
 }
-export function addAssertionMethod(name: string, method: AssertionMethod<any>): void {
-  if (assertionMethods.has(name)) {
+export function addMatcherMethod(name: string, method: MatcherMethod<any>): void {
+  if (matcherMethods.has(name)) {
     error(`Assertion method '${name}' already exists`)
   }
-  assertionMethods.set(name, function (this: InternalAssertion, ...args: any[]) {
+  matcherMethods.set(name, function (this: InternalMatcher, ...args: any[]) {
     const context = this._context
     const result = method.call(context, context.subject, ...args)
-    if (result == nil) return newChainedAssertion(context, context.subject)
+    if (result == nil) return newChainedMatcher(context, context.subject)
     return result
   })
 }
 
-export function extend(assertions: AssertionMethods): void {
+export function extend(assertions: MatcherMethods): void {
   for (const [name, method] of pairs(assertions)) {
-    addAssertionMethod(name, method)
+    addMatcherMethod(name, method)
   }
 }
 
-export type MatcherImpls<K extends keyof Assertion<any>> = {
-  [P in K]: Assertion<any>[P] extends (this: Assertion<infer T>, ...args: infer A) => infer R
-    ? (this: AssertionContext, subject: T, ...args: A) => R extends Assertion<T> ? void : R
+export type MatcherImpls<K extends keyof Matchers<any>> = {
+  [P in K]: Matchers<any>[P] extends (this: Matchers<infer T>, ...args: infer A) => infer R
+    ? (this: MatcherContext, subject: T, ...args: A) => R extends Matchers<T> ? void : R
     : never
 }
 
 // builtin assertions
 
-const builtinAssertions: MatcherImpls<keyof BuiltinAssertions> = {
+const builtinMatchers: MatcherImpls<keyof BuiltinMatchers> = {
   toBe,
   equal,
   matchTable,
@@ -152,4 +145,4 @@ const builtinAssertions: MatcherImpls<keyof BuiltinAssertions> = {
   nthReturnedWith,
 }
 
-extend(builtinAssertions)
+extend(builtinMatchers)

@@ -1,7 +1,7 @@
 import { assertIsNumber } from "./utils"
-import { AssertionContext } from "../types"
+import { MatcherContext } from "../types"
 
-export function closeTo(this: AssertionContext, received: unknown, expected: unknown, precision: number = 0.01): void {
+export function closeTo(this: MatcherContext, received: unknown, expected: unknown, precision: number = 0.01): void {
   assertIsNumber(this, received, "Received")
   assertIsNumber(this, expected, "Expected")
   if (precision <= 0) {
@@ -25,11 +25,11 @@ export function closeTo(this: AssertionContext, received: unknown, expected: unk
   )
 }
 
-function compareAssertion(
+function comparingMatcher(
   operator: string,
   fn: (received: number, expected: number) => boolean,
-): (this: AssertionContext, received: unknown, expected: unknown) => void {
-  return function (this: AssertionContext, received: unknown, expected: unknown): void {
+): (this: MatcherContext, received: unknown, expected: unknown) => void {
+  return function (this: MatcherContext, received: unknown, expected: unknown): void {
     assertIsNumber(this, received, "Received")
     assertIsNumber(this, expected, "Expected")
     const pass = fn(received, expected)
@@ -41,12 +41,12 @@ function compareAssertion(
   }
 }
 
-export const gt = compareAssertion(">", (received, expected) => received > expected)
-export const gte = compareAssertion(">=", (received, expected) => received >= expected)
-export const lt = compareAssertion("<", (received, expected) => received < expected)
-export const lte = compareAssertion("<=", (received, expected) => received <= expected)
+export const gt = comparingMatcher(">", (received, expected) => received > expected)
+export const gte = comparingMatcher(">=", (received, expected) => received >= expected)
+export const lt = comparingMatcher("<", (received, expected) => received < expected)
+export const lte = comparingMatcher("<=", (received, expected) => received <= expected)
 
-export function isNan(this: AssertionContext, received: unknown): void {
+export function isNan(this: MatcherContext, received: unknown): void {
   const pass = typeof received == "number" && isNaN(received)
   if (pass != this.isNot) return
   this.fail(`Expected: ${this.isNot ? "not " : ""}NaN\nReceived: ${received}`, nil, "")
