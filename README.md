@@ -28,6 +28,9 @@ expect(0).to.be.truthy(); // 0 is truthy in lua!
 
 expect("foo").to.be.a("string");
 
+class Foo {}
+expect(new Foo()).to.be.a(Foo);
+
 expect([1, 2, 3]).to.contain(2);
 
 expect({ foo: "bar" }).to.equal({ foo: "bar" });
