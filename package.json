@@ -32,9 +32,10 @@
   },
   "scripts": {
     "build": "tstl -p tsconfig.json",
-    "test": "yarn run build && busted -C dist",
+    "test": "yarn build && busted -C dist",
     "clean": "del-cli dist",
-    "build:release": "tstl -p tsconfig-release.json"
+    "build:release": "tstl -p tsconfig-release.json",
+    "prepack": "yarn clean && yarn build:release"
   },
   "packageManager": "yarn@3.3.0"
 }
