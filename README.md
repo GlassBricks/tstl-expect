@@ -18,7 +18,7 @@ Supports:
 Examples
 
 ```ts
-import { mockFn, mockFnNoSelf } from "./mock";
+import expect, { mockFn, mockFnNoSelf } from "tstl-expect";
 
 expect(1).to.be(1);
 
