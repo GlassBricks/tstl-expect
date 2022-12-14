@@ -1,8 +1,7 @@
-import expect from "../.."
-import { mockFn, mockFnNoSelf } from "../../mock"
+import expect, { mock as mock1, mock } from "../.."
 
 test("called", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   expect(mock).to.not.be.called()
   expect(() => expect(mock).to.be.called()).to.throw(
     `expect(mockFunction).to.be.called()
@@ -27,7 +26,7 @@ Called with:
 })
 
 test("calledTimes", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   expect(mock).to.be.calledTimes(0)
   expect(mock).to.not.be.calledTimes(1)
   expect(() => expect(mock).to.be.calledTimes(1)).to.throw(
@@ -63,7 +62,7 @@ Called with:
 })
 
 test("calledWith", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   mock(1, 2)
   mock(3, 4)
   expect(mock)
@@ -94,7 +93,7 @@ Called with:
 })
 
 test("lastCalledWith", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   mock(1, 2)
   mock(3, 4)
   expect(mock).to.be.lastCalledWith(3, 4).to.be.lastCalledWith(expect.any("number"), 4).not.to.be.lastCalledWith(5, 6)
@@ -121,7 +120,7 @@ Called with:
 })
 
 test("nthCalledWith", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   mock(1, 2)
   mock(3, 4)
   mock(7, 8)
@@ -170,7 +169,7 @@ Called with:
 })
 
 test("returnedWith", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   mock.invokes((x) => x)
   mock(1)
   mock(2)
@@ -203,7 +202,7 @@ Received:
 })
 
 test("lastReturnedWith", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   mock.invokes((x) => x)
   mock(1)
   mock(2)
@@ -235,7 +234,7 @@ Received:
 })
 
 test("nthReturnedWith", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   mock.invokes((x) => x)
   mock(1)
   mock(2)
@@ -286,7 +285,7 @@ Received:
 })
 
 test("nth returned with nil return values", () => {
-  const fn = mockFn((x) => x)
+  const fn = mock.fn((x) => x)
 
   fn(1)
   fn(nil)

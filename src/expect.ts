@@ -69,7 +69,7 @@ const matcherMt: LuaMetatable<InternalMatcher> = {
     return nil
   },
   __call(this: InternalMatcher, expected: unknown) {
-    matcherMethods.get(TOBE_MATCHER)!.call(this, expected)
+    return matcherMethods.get(TOBE_MATCHER)!.call(this, expected)
   },
 }
 

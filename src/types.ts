@@ -280,6 +280,8 @@ type AnyFunction = (...args: any) => any
 export interface BaseMock<F extends AnyFunction> {
   readonly _isMockFunction: true
 
+  readonly hasSelfParam: boolean
+
   /**
    * The calls of this mock. Does not include the self parameter (if any).
    */
@@ -312,6 +314,13 @@ export interface BaseMock<F extends AnyFunction> {
    * Resets this mock, clearing all calls and return values.
    */
   clear(): this
+
+  /**
+   * If this mock replaces a function on a table, this will restores original function.
+   *
+   * @see mock
+   */
+  reset(): void
 
   /**
    * Sets the implementation of this mock (will call the given function instead).
@@ -360,8 +369,8 @@ export type CalledParams<T extends any[] = unknown[]> = T & {
   n: number
 }
 
-export type AnySelflessFun = (this: void, ...args: any[]) => any
-export type AnyContextualFun = (this: any, ...args: any[]) => any
+export type AnySelflessFun = (this: void, ...args: any) => any
+export type AnyContextualFun = (this: any, ...args: any) => any
 
 export type UnknownSelflessFun = (this: void, ...args: unknown[]) => unknown
 export type UnknownContextualFun = (this: unknown, ...args: unknown[]) => unknown
@@ -371,7 +380,7 @@ export type UnknownContextualFun = (this: unknown, ...args: unknown[]) => unknow
  *
  * The first parameter (assumed to be the self parameter) is not included in the `calls` array.
  */
-export interface MockWithContext<F extends (this: any, ...args: any[]) => any> extends BaseMock<F>, CallableFunction {
+export interface MockWithContext<F extends AnyContextualFun> extends BaseMock<F>, CallableFunction {
   readonly hasSelfParam: true
 
   (this: ThisParameterType<F>, ...args: Parameters<F>): ReturnType<F>
@@ -382,7 +391,7 @@ export interface MockWithContext<F extends (this: any, ...args: any[]) => any> e
  *
  * All parameters are included in the `calls` array, including the self parameter if it exists.
  */
-export interface MockNoSelf<F extends (this: void, ...args: any) => any> extends BaseMock<F>, CallableFunction {
+export interface MockNoSelf<F extends AnySelflessFun> extends BaseMock<F>, CallableFunction {
   readonly hasSelfParam: false
   contexts: []
 
@@ -394,21 +403,21 @@ export interface MockNoSelf<F extends (this: void, ...args: any) => any> extends
 
 export interface BuiltinMatchers {
   /** Passes if the given mock has been called at least once. */
-  called<F extends AnyFunction>(this: Matchers<BaseMock<F>>): this
+  called(this: Matchers<AnyFunction>): this
   /** Passes if the given mock has been called the given number of times. */
-  calledTimes(this: Matchers<BaseMock<AnyFunction>>, expected: number): this
+  calledTimes(this: Matchers<AnyFunction>, expected: number): this
   /**
    * Passes if the given mock has been called with the given arguments.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  calledWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, ...args: Parameters<F>): this
+  calledWith(this: Matchers<AnyFunction>, ...args: any): this
   /**
    * Passes if the last call to the given mock has the given arguments.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  lastCalledWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, ...args: Parameters<F>): this
+  lastCalledWith(this: Matchers<AnyFunction>, ...args: any): this
   /**
    * Passes if the nth call to the given mock has the given arguments.
    *
@@ -416,7 +425,7 @@ export interface BuiltinMatchers {
    *
    * Note: if this mock has not been yet called n times, this will fail regardless of if this assertion is negated or not.
    */
-  nthCalledWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, n: number, ...args: Parameters<F>): this
+  nthCalledWith(this: Matchers<AnyFunction>, n: number, ...args: any): this
 
   /**
    * Passes if the given mock has returned with the given value.
@@ -424,13 +433,13 @@ export interface BuiltinMatchers {
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
 
-  returnedWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, value: ReturnType<F>): this
+  returnedWith(this: Matchers<AnyFunction>, value: unknown): this
   /**
    * Passes if the last call to the given mock has returned with the given value.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  lastReturnedWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, value: ReturnType<F>): this
+  lastReturnedWith(this: Matchers<AnyFunction>, value: unknown): this
 
   /**
    * Passes if the nth call to the given mock has returned with the given value.
@@ -439,5 +448,9 @@ export interface BuiltinMatchers {
    *
    * Note: if this mock has not been yet called n times, this will fail regardless of if this assertion is negated or not.
    */
-  nthReturnedWith<F extends AnyFunction>(this: Matchers<BaseMock<F>>, n: number, value: ReturnType<F>): this
+  nthReturnedWith(this: Matchers<AnyFunction>, n: number, value: unknown): this
 }
+
+export type EnforceNoSelf<F extends AnySelflessFun> = F extends (...args: infer A) => infer R
+  ? (this: void, ...args: A) => R
+  : never

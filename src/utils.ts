@@ -1,6 +1,6 @@
 /** @noSelfInFile */
 
-import { TstlClass } from "./types"
+import { AnySelflessFun, TstlClass } from "./types"
 
 export const primitiveTypes = newLuaSet("string", "number", "boolean", "nil")
 
@@ -12,9 +12,7 @@ export function isTstlClass(v: unknown): v is TstlClass {
   return (v as any).prototype.constructor == v
 }
 
-export function pack<A extends any[]>(...args: A): A & { n: number } {
-  const n = select("#", ...args)
-  const res = [...args] as A & { n: number }
-  res.n = n
-  return res
+export function isCallable(v: unknown): v is AnySelflessFun {
+  const vType = type(v)
+  return vType == "function" || (vType == "table" && getmetatable(v)?.__call != nil)
 }

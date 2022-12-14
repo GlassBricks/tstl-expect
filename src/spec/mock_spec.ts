@@ -1,14 +1,14 @@
-import expect from ".."
-import { mockFn, mockFnNoSelf } from "../mock"
+/* eslint-disable @typescript-eslint/unbound-method */
+import expect, { mock as mock1 } from ".."
 
 test("name", () => {
-  const mock = mockFn()
+  const mock = mock1.fn()
   mock.mockName("test")
   expect(mock.getMockName()).toBe("test")
 })
 
 test("calls", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   mock(1, 2)
   mock(3, 4)
   expect(mock).to.matchTable({
@@ -21,7 +21,7 @@ test("calls", () => {
     lastCall: [3, 4],
   })
 
-  const mockSelf = mockFn()
+  const mockSelf = mock1.fn()
   mockSelf.call(0, 1, 2)
   mockSelf.call(1, 3, 4)
   expect(mockSelf).to.matchTable({
@@ -36,7 +36,7 @@ test("calls", () => {
 })
 
 test("invokes", () => {
-  const mock = mockFnNoSelf<(x: number, y: number) => number>()
+  const mock = mock1.fnNoSelf<(x: number, y: number) => number>()
   mock.invokes((a, b) => a + b)
 
   expect(mock(1, 2)).toBe(3)
@@ -53,7 +53,7 @@ test("invokes", () => {
     returnValues: [3, 7],
   })
 
-  const mockSelf = mockFn<(this: number, x: number) => number>()
+  const mockSelf = mock1.fn<(this: number, x: number) => number>()
   mockSelf.invokes(function (this: number, a) {
     return this + a
   })
@@ -71,7 +71,7 @@ test("invokes", () => {
 })
 
 test("invokesOnce", () => {
-  const mock = mockFnNoSelf<(x: number, y: number) => number>()
+  const mock = mock1.fnNoSelf<(x: number, y: number) => number>()
   mock.invokes((a, b) => a + b)
   mock.invokesOnce((a, b) => a * b)
   mock.invokesOnce((a, b) => a - b)
@@ -92,7 +92,7 @@ test("invokesOnce", () => {
     returnValues: [6, -2, 7],
   })
 
-  const mockSelf = mockFn<(this: number, x: number) => number>()
+  const mockSelf = mock1.fn<(this: number, x: number) => number>()
   mockSelf.invokes(function (this: number, a) {
     return this + a
   })
@@ -117,7 +117,7 @@ test("invokesOnce", () => {
 })
 
 test("clear", () => {
-  const mock = mockFnNoSelf()
+  const mock = mock1.fnNoSelf()
   mock(1, 2)
   mock(3, 4)
   mock.clear()
@@ -129,7 +129,7 @@ test("clear", () => {
     lastCall: nil,
   })
 
-  const mockSelf = mockFn()
+  const mockSelf = mock1.fn()
   mockSelf.call(0, 1, 2)
   mockSelf.call(1, 3, 4)
   mockSelf.clear()
@@ -139,5 +139,85 @@ test("clear", () => {
     calls: [],
     contexts: [],
     lastCall: nil,
+  })
+})
+
+describe("spying and stubbing a single", () => {
+  let obj: {
+    withSelf(this: number, x: number): number
+    withSelf2(this: number, x: number): number
+  }
+  before_each(() => {
+    obj = {
+      withSelf(this: number, x) {
+        return this + x
+      },
+      withSelf2(this: number, x: number) {
+        return this + x
+      },
+    }
+  })
+  test("on", () => {
+    const orig = obj.withSelf
+    const sp = mock1.on(obj, "withSelf")
+    expect(sp).to.be(obj.withSelf)
+
+    obj.withSelf.call(1, 2)
+    sp.returnsOnce(10)
+    sp.call(3, 4)
+    expect(sp).to.matchTable({
+      numCalls: 2,
+      calls: [[2], [4]],
+      contexts: [1, 3],
+      lastCall: [4],
+      returnValues: [3, 10],
+    })
+
+    sp.reset()
+    expect(obj.withSelf).not.to.be(sp).and.to.be(orig)
+  })
+
+  test("all", () => {
+    const result = mock1.all(obj)
+    expect(result).to.be(obj)
+
+    obj.withSelf.call(1, 2)
+    result.withSelf.call(3, 4)
+    expect(result.withSelf).to.matchTable({
+      numCalls: 2,
+      calls: [[2], [4]],
+      contexts: [1, 3],
+      lastCall: [4],
+      returnValues: [3, 7],
+    })
+
+    obj.withSelf2.call(1, 2)
+    result.withSelf2.call(3, 4)
+    expect(result.withSelf2).to.matchTable({
+      numCalls: 2,
+      calls: [[2], [4]],
+      contexts: [1, 3],
+      lastCall: [4],
+      returnValues: [3, 7],
+    })
+
+    mock1.clear(obj)
+    // not reset
+    expect(result.withSelf).to.matchTable({
+      numCalls: 0,
+      calls: [],
+      contexts: [],
+      lastCall: nil,
+    })
+    expect(result.withSelf2).to.matchTable({
+      numCalls: 0,
+      calls: [],
+      contexts: [],
+      lastCall: nil,
+    })
+
+    mock1.reset(obj)
+    expect(result.withSelf).to.be.a("function")
+    expect(result.withSelf2).to.be.a("function")
   })
 })

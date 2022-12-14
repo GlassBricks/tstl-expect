@@ -1,10 +1,10 @@
 import { BaseMock, CalledParams, MatcherContext } from "../types"
-import { isMock } from "../mock"
+import { mock } from "../mock"
 import { deepCompare, getDiffString, prettyPrint } from "../pretty-print-and-diff"
 import { assertIsNonNegativeInteger } from "./utils"
 
 function assertIsMock(context: MatcherContext, received: unknown): asserts received is BaseMock<any> {
-  if (!isMock(received)) {
+  if (!mock.isMock(received)) {
     context.fail(`Received value should be a mock.\Received: ${prettyPrint(received)}`)
   }
 }
