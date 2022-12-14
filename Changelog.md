@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.2.0
 
 - Renamed "Assertion" to "Matchers", and old "Matchers" to "Asymmetric Matchers". Almost all functions have the same names, but the types are different.
 - Moved mock functions and related functions to a separate importable namespace `mock`.
