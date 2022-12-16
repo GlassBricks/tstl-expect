@@ -15,10 +15,10 @@ import {
 } from "./asymmetric-matchers"
 import { BuiltinExpectMatchers, ExpectObj, InvertedExpectMatchers, Matchers } from "./types"
 
-const expect = function expect<T>(this: void, subject: T): Matchers<T> {
+const expectObj = function expect<T>(this: void, subject: T): Matchers<T> {
   return newMatcher(subject)
 }
-expect.extend = extend
+expectObj.extend = extend
 
 const builtinMatchers: BuiltinExpectMatchers = {
   any,
@@ -31,17 +31,20 @@ const builtinMatchers: BuiltinExpectMatchers = {
   stringMatching,
 }
 
-expect._ = allMatcher
+expectObj._ = allMatcher
 
-Object.assign(expect, builtinMatchers)
+Object.assign(expectObj, builtinMatchers)
 
 const inverted: Partial<InvertedExpectMatchers> = {}
 for (const key of keys<InvertedExpectMatchers>()) {
   inverted[key] = createInvertedFactory<any>(builtinMatchers[key])
 }
-expect.not = inverted as InvertedExpectMatchers
+expectObj.not = inverted as InvertedExpectMatchers
 
-export default expect as ExpectObj
+const expect = expectObj as ExpectObj
+
+// noinspection JSUnusedGlobalSymbols
+export default expect
 export * from "./types"
 export * from "./asymmetric-matcher"
 export * from "./mock"
