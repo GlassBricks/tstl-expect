@@ -3,6 +3,7 @@
   "license": "MIT",
   "version": "0.2.0",
   "types": "./dist/index",
+  "main": "./dist/index",
   "files": [
     "dist/**/*.d.ts",
     "dist/**/*.lua"
