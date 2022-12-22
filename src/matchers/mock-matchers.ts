@@ -1,7 +1,7 @@
 import { BaseMock, CalledParams, MatcherContext } from "../types"
 import { mock } from "../mock"
 import { deepCompare, getDiffString, prettyPrint } from "../pretty-print-and-diff"
-import { assertIsNonNegativeInteger } from "./utils"
+import { assertIsNonNegativeInteger, assertIsPositiveInteger } from "./utils"
 import { pack } from "../pack"
 
 function assertIsMock(context: MatcherContext, received: unknown): asserts received is BaseMock<any> {
@@ -264,7 +264,7 @@ ${printCallsAtIndicesComparing(calls, expectedParams, indices, numCalls - 1)}`,
 }
 
 export function nthCalledWith(this: MatcherContext, received: unknown, n: unknown, ...expected: unknown[]): void {
-  assertIsNonNegativeInteger(this, n, "Nth call")
+  assertIsPositiveInteger(this, n, "Nth call")
   assertIsMock(this, received)
 
   const expectedParams = pack(...expected)
@@ -421,7 +421,7 @@ Number of calls: ${numCalls}`,
 }
 
 export function nthReturnedWith(this: MatcherContext, received: unknown, n: unknown, expected: unknown): void {
-  assertIsNonNegativeInteger(this, n, "Nth call")
+  assertIsPositiveInteger(this, n, "Nth call")
   assertIsMock(this, received)
   const { numCalls, returnValues } = received
   if (n > numCalls) {

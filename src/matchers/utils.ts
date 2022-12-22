@@ -28,6 +28,17 @@ export function assertIsNonNegativeInteger(
   }
 }
 
+export function assertIsPositiveInteger(
+  context: MatcherContext,
+  value: unknown,
+  part: string,
+): asserts value is number {
+  assertIsNumber(context, value, part)
+  if (value <= 0 || math.floor(value) != value) {
+    context.fail(`${part} value must be a positive integer, got ${value}`)
+  }
+}
+
 export type AnyFunction = (this: void, ...args: any[]) => any
 export function assertIsFunction(context: MatcherContext, value: unknown, part: string): asserts value is AnyFunction {
   if (typeof value != "function") {

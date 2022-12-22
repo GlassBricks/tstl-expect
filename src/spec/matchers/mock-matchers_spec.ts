@@ -139,6 +139,9 @@ test("nthCalledWith", () => {
     .to.be.nthCalledWith(2, expect.any("number"), 4)
     .not.to.be.nthCalledWith(1, 5, 6)
 
+  expect(() => expect(mock).to.be.nthCalledWith(0, expect._, expect._)).to.throw()
+  expect(() => expect(mock).to.be.nthCalledWith(0.5, expect._, expect._)).to.throw()
+
   expect(() => expect(mock).to.be.nthCalledWith(4, 5, 4)).to.throw(
     `
 expect(mockFunction).to.be.nthCalledWith(n, ...expected)
