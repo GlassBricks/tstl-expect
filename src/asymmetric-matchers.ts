@@ -59,7 +59,7 @@ export function tableContaining(value: unknown): AsymmetricMatcher {
   if (type(value) != "table") error("Expected value should be a table, got " + type(value))
   return _createInternalMatcher({
     test: (r) => deepCompare(value, r, true),
-    description: () => `objectContaining(${prettyPrint(value)})`,
+    description: () => `tableContaining(${prettyPrint(value)})`,
   })
 }
 

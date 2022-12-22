@@ -23,7 +23,7 @@ test("arrayContaining", () => {
   assert.False(expect.arrayContaining([1, 2]).test([2, 3, 4]))
 })
 
-test("objectContaining", () => {
+test("tableContaining", () => {
   assert.True(expect.tableContaining({ a: 1, b: 2 }).test({ a: 1, b: 2, c: 3 }))
   assert.False(expect.tableContaining({ a: 1, b: 2 }).test({ a: 1, b: 3 }))
   assert.True(expect.tableContaining({ a: 1, b: 2 }).test({ a: 1, b: 2 }))
