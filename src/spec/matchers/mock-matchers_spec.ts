@@ -330,3 +330,31 @@ Received:
 `.trim(),
   )
 })
+
+test("different number of params in expected vs actual", () => {
+  const mock = mock1.fnNoSelf()
+  mock(1, 2, 3, nil)
+
+  expect(mock).toHaveBeenCalledWith(1, 2, 3, nil)
+  expect(mock).toHaveBeenCalledWith(1, 2, 3) // nil implicitly
+
+  expect(() => expect(mock).to.be.calledWith(1, 2)).to.throw(
+    `
+expect(mockFunction).to.be.calledWith(...expected)
+
+Expected: 1, 2
+Called with:
+  1, 2, *3, nil
+`.trim(),
+  )
+
+  expect(() => expect(mock).to.be.calledWith(1, 2, 3, nil, 5)).to.throw(
+    `
+expect(mockFunction).to.be.calledWith(...expected)
+
+Expected: 1, 2, 3, nil, 5
+Called with:
+  1, 2, 3, nil
+`.trim(),
+  )
+})

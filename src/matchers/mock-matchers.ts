@@ -2,6 +2,7 @@ import { BaseMock, CalledParams, MatcherContext } from "../types"
 import { mock } from "../mock"
 import { deepCompare, getDiffString, prettyPrint } from "../pretty-print-and-diff"
 import { assertIsNonNegativeInteger } from "./utils"
+import { pack } from "../pack"
 
 function assertIsMock(context: MatcherContext, received: unknown): asserts received is BaseMock<any> {
   if (!mock.isMock(received)) {
@@ -76,19 +77,19 @@ function printCalls(calls: CalledParams[]): string {
   return printValues(calls, calls.length, printArgs, "calls")
 }
 
-function callsEqual(expected: unknown[] & { n?: never }, actual: CalledParams): boolean {
-  const actualCopy: any = {}
-  for (const [key, value] of pairs(actual)) {
-    actualCopy[key] = value
+function callsEqual(expected: CalledParams, actual: CalledParams): boolean {
+  for (const i of $range(1, math.max(expected.n, actual.n))) {
+    if (!deepCompare(expected[i - 1], actual[i - 1])) {
+      return false
+    }
   }
-  actualCopy.n = nil
-  return deepCompare(expected, actualCopy)
+  return true
 }
 
-function getCallDiff(expected: unknown[] & { n?: never }, actual: CalledParams): string {
+function getCallDiff(expected: CalledParams, actual: CalledParams): string {
   const result: string[] = []
   let hasAnyDiff = false
-  for (const i of $range(1, actual.length)) {
+  for (const i of $range(1, math.max(expected.n, actual.n))) {
     const str = getDiffString(expected[i - 1], actual[i - 1])
     if (str) {
       result.push("*" + str)
@@ -104,7 +105,7 @@ function getCallDiff(expected: unknown[] & { n?: never }, actual: CalledParams):
     return ret
   }
 }
-function printCallsComparing(calls: CalledParams[], expected: unknown[] & { n?: never }): string {
+function printCallsComparing(calls: CalledParams[], expected: CalledParams): string {
   return printValues(calls, calls.length, (call) => getCallDiff(expected, call), "calls")
 }
 
@@ -114,7 +115,7 @@ function printCallsAtIndices(calls: CalledParams[], indices: number[], highlight
 
 function printCallsAtIndicesComparing(
   calls: CalledParams[],
-  expected: unknown[] & { n?: never },
+  expected: CalledParams,
   indices: number[],
   highlightIndex: number | undefined,
 ): string {
@@ -184,25 +185,27 @@ ${printCalls(received.calls)}`,
     )
   }
 }
-export function calledWith(this: MatcherContext, received: unknown, ...expectedArgs: unknown[]): void {
+export function calledWith(this: MatcherContext, received: unknown, ...expected: unknown[]): void {
   assertIsMock(this, received)
-  const expected = [...expectedArgs]
+  const expectedParams = pack(...expected)
 
   const { numCalls, calls } = received
-  const matchingIndex = calls.findIndex((call) => callsEqual(expected, call))
+  const matchingIndex = calls.findIndex((call) => callsEqual(expectedParams, call))
   const pass = matchingIndex > -1
   if (pass != this.isNot) return
   if (this.isNot) {
     // find up to MaxPrintCalls calls that are matching
     const indices: number[] = []
     for (const i of $range(0, numCalls - 1)) {
-      if (callsEqual(expected, calls[i])) {
+      if (callsEqual(expectedParams, calls[i])) {
         indices.push(i)
         if (indices.length == MaxPrintCalls) break
       }
     }
     this.fail(
-      `Expected: not ${printArgs(expected)}\n` + `Called with:\n${printCallsAtIndices(calls, indices, nil)}`,
+      `Expected: not ${printArgs(expectedParams)}
+Called with:
+${printCallsAtIndices(calls, indices, nil)}`,
       nil,
       "...expected",
       received.getMockName(),
@@ -210,7 +213,9 @@ export function calledWith(this: MatcherContext, received: unknown, ...expectedA
   } else {
     // printCallsComparing already shows some not-matching calls
     this.fail(
-      `Expected: ${printArgs(expected)}\n` + `Called with:\n${printCallsComparing(calls, expected)}`,
+      `Expected: ${printArgs(expectedParams)}
+Called with:
+${printCallsComparing(calls, expectedParams)}`,
       nil,
       "...expected",
       received.getMockName(),
@@ -218,7 +223,7 @@ export function calledWith(this: MatcherContext, received: unknown, ...expectedA
   }
 }
 
-export function lastCalledWith(this: MatcherContext, received: unknown, ...expectedArgs: unknown[]): void {
+export function lastCalledWith(this: MatcherContext, received: unknown, ...expected: unknown[]): void {
   assertIsMock(this, received)
 
   const { numCalls, calls, lastCall } = received
@@ -232,14 +237,14 @@ Received: 0 calls`,
     )
   }
 
-  const expected = [...expectedArgs]
+  const expectedParams = pack(...expected)
 
-  const pass = callsEqual(expected, lastCall!)
+  const pass = callsEqual(expectedParams, lastCall!)
   if (pass != this.isNot) return
   const indices = [numCalls - 2, numCalls - 1]
   if (this.isNot) {
     this.fail(
-      `Expected: not ${printArgs(expected)}
+      `Expected: not ${printArgs(expectedParams)}
 Called with:
 ${printCallsAtIndices(calls, indices, numCalls - 1)}`,
       nil,
@@ -248,9 +253,9 @@ ${printCallsAtIndices(calls, indices, numCalls - 1)}`,
     )
   } else {
     this.fail(
-      `Expected: ${printArgs(expected)}
+      `Expected: ${printArgs(expectedParams)}
 Called with:
-${printCallsAtIndicesComparing(calls, expected, indices, numCalls - 1)}`,
+${printCallsAtIndicesComparing(calls, expectedParams, indices, numCalls - 1)}`,
       nil,
       "...expected",
       received.getMockName(),
@@ -258,9 +263,11 @@ ${printCallsAtIndicesComparing(calls, expected, indices, numCalls - 1)}`,
   }
 }
 
-export function nthCalledWith(this: MatcherContext, received: unknown, n: unknown, ...expectedArgs: unknown[]): void {
+export function nthCalledWith(this: MatcherContext, received: unknown, n: unknown, ...expected: unknown[]): void {
   assertIsNonNegativeInteger(this, n, "Nth call")
   assertIsMock(this, received)
+
+  const expectedParams = pack(...expected)
 
   const { numCalls, calls } = received
   if (n > numCalls) {
@@ -276,14 +283,14 @@ ${printCalls(calls)}`,
     )
   }
 
-  const pass = callsEqual(expectedArgs, calls[n - 1])
+  const pass = callsEqual(expectedParams, calls[n - 1])
   if (pass != this.isNot) return
 
   if (this.isNot) {
     const indices = [n - 2, n - 1, n]
     this.fail(
       `n: ${n}
-Expected: not ${printArgs(expectedArgs)}
+Expected: not ${printArgs(expectedParams)}
 Called with:
 ${printCallsAtIndices(calls, indices, n - 1)}`,
       nil,
@@ -292,16 +299,16 @@ ${printCallsAtIndices(calls, indices, n - 1)}`,
     )
   } else {
     // find if any other calls match
-    let firstBefore = calls.findIndex((call, index) => index < n - 1 && callsEqual(expectedArgs, call))
-    let firstAfter = calls.findIndex((call, index) => index > n - 1 && callsEqual(expectedArgs, call))
+    let firstBefore = calls.findIndex((call, index) => index < n - 1 && callsEqual(expectedParams, call))
+    let firstAfter = calls.findIndex((call, index) => index > n - 1 && callsEqual(expectedParams, call))
     if (firstBefore == -1) firstBefore = n - 2
     if (firstAfter == -1) firstAfter = n
     const indices = [firstBefore, n - 1, firstAfter]
     this.fail(
       `n: ${n}
-Expected: ${printArgs(expectedArgs)}
+Expected: ${printArgs(expectedParams)}
 Called with:
-${printCallsAtIndicesComparing(calls, expectedArgs, indices, n - 1)}`,
+${printCallsAtIndicesComparing(calls, expectedParams, indices, n - 1)}`,
       nil,
       "n, ...expected",
       received.getMockName(),
