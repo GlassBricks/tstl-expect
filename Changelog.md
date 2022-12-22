@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.1
+
+- Fix issues when number of expected params vs actual params is different in mock function matchers.
+
 ## v0.3.0
 
 - Added a `stub` option to mocking functions that replace implementations.
