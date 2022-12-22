@@ -13,7 +13,7 @@ import {
   stringMatching,
   tableContaining,
 } from "./asymmetric-matchers"
-import { BuiltinExpectMatchers, ExpectObj, InvertedExpectMatchers, Matchers } from "./types"
+import { BuiltinExpectMatchers, Expect, InvertedExpectMatchers, Matchers } from "./types"
 
 const expectObj = function expect<T>(this: void, subject: T): Matchers<T> {
   return newMatcher(subject)
@@ -41,7 +41,7 @@ for (const key of keys<InvertedExpectMatchers>()) {
 }
 expectObj.not = inverted as InvertedExpectMatchers
 
-const expect = expectObj as ExpectObj
+const expect = expectObj as Expect
 
 // noinspection JSUnusedGlobalSymbols
 export default expect

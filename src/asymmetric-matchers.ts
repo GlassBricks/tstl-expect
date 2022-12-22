@@ -2,9 +2,9 @@
 import { _createInternalMatcher } from "./asymmetric-matcher"
 import { deepCompare, prettyPrint } from "./pretty-print-and-diff"
 import { isTstlClass } from "./utils"
-import { LuaType, Matcher, TstlClass } from "./types"
+import { AsymmetricMatcher, LuaType, TstlClass } from "./types"
 
-export function anything(): Matcher {
+export function anything(): AsymmetricMatcher {
   return _createInternalMatcher({
     test: (v) => v != nil,
     description: () => "anything()",
@@ -12,7 +12,7 @@ export function anything(): Matcher {
 }
 
 const luaTypeSet = keySet<Record<LuaType, true>>()
-export function any(expected: LuaType | TstlClass): Matcher {
+export function any(expected: LuaType | TstlClass): AsymmetricMatcher {
   assert(
     expected != nil,
     'expected must not be nil. Did you supply a type constructor e.g. expect.any(String)? Supply a type string instead e.g. expect.any("string")',
@@ -29,14 +29,14 @@ export function any(expected: LuaType | TstlClass): Matcher {
   })
 }
 
-export function closeTo(expected: number, delta: number = 0.01): Matcher {
+export function closeTo(expected: number, delta: number = 0.01): AsymmetricMatcher {
   return _createInternalMatcher({
     test: (r) => typeof r == "number" && math.abs(r - expected) <= delta,
     description: () => `closeTo(${expected}, ${delta})`,
   })
 }
 
-export function arrayContaining(values: readonly unknown[]): Matcher {
+export function arrayContaining(values: readonly unknown[]): AsymmetricMatcher {
   if (!Array.isArray(values)) {
     error("Expected value must be an array")
   }
@@ -52,7 +52,7 @@ export function arrayContaining(values: readonly unknown[]): Matcher {
   })
 }
 
-export function tableContaining(value: unknown): Matcher {
+export function tableContaining(value: unknown): AsymmetricMatcher {
   if (typeof value != "object") {
     error("Expected value must be an object")
   }
@@ -63,7 +63,7 @@ export function tableContaining(value: unknown): Matcher {
   })
 }
 
-export function stringContaining(value: unknown): Matcher {
+export function stringContaining(value: unknown): AsymmetricMatcher {
   if (typeof value != "string") {
     error("Expected value must be a string")
   }
@@ -73,7 +73,7 @@ export function stringContaining(value: unknown): Matcher {
   })
 }
 
-export function stringMatching(value: unknown): Matcher {
+export function stringMatching(value: unknown): AsymmetricMatcher {
   if (typeof value != "string") {
     error("Expected value must be a string")
   }
@@ -83,7 +83,7 @@ export function stringMatching(value: unknown): Matcher {
   })
 }
 
-export function exactly(value: unknown): Matcher {
+export function exactly(value: unknown): AsymmetricMatcher {
   return _createInternalMatcher({
     test: (r) => rawequal(r, value),
     description: () => `reference(${prettyPrint(value)})`,

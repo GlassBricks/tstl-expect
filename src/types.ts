@@ -96,6 +96,7 @@ export interface BuiltinMatchers {
    * Asymmetric matchers are supported in the expected value.
    */
   equal(expected: unknown): this
+  toEqual(expected: unknown): this
 
   /**
    * Passes if all properties in this table are present and equal in the expected table.
@@ -103,6 +104,7 @@ export interface BuiltinMatchers {
    * Asymmetric matchers are supported in the expected value.
    */
   matchTable(expected: unknown): this
+  toMatchTable(expected: unknown): this
 
   /**
    * Passes if this is the expected type.
@@ -110,24 +112,31 @@ export interface BuiltinMatchers {
    * Expected type must be a lua type, e.g. "number", "string", "table", or a TSTL class.
    */
   a(type: LuaType | TstlClass): this
+  toBeA(type: LuaType | TstlClass): this
 
   /** Passes if this is not nil */
   any(): this
+  toBeAny(): this
 
   /** Passes if this is nil */
   nil(): this
+  toBeNil(): this
 
   /** Passes if this is truthy */
   truthy(): this
+  toBeTruthy(): this
 
   /** Passes if this is falsy */
   falsy(): this
+  toBeFalsy(): this
 
   /** Passes if this is a string, and matches the given pattern. */
   match(pattern: string): this
+  toMatch(pattern: string): this
 
   /** Passes if this is a string, and includes the given substring. */
   include(str: string): this
+  toInclude(str: string): this
 
   /**
    * Passes if this is an array, string, or iterable, and contains the given value.
@@ -137,6 +146,7 @@ export interface BuiltinMatchers {
    * Note: this will default to using the `ipairs` iterator if another iterator is not provided.
    */
   contain(value: unknown): this
+  toContain(value: unknown): this
 
   /**
    * Passes if this is an array, string, or iterable, and contains the given value.
@@ -146,12 +156,14 @@ export interface BuiltinMatchers {
    * Note: this will default to using the `ipairs` iterator if another iterator is not provided.
    */
   containEqual(value: unknown): this
+  toContainEqual(value: unknown): this
 
   /**
    * Passes if this is a table and contains the provided key.
    * @param key
    */
   key(key: AnyNotNil): this
+  toHaveKey(key: AnyNotNil): this
 
   /**
    * Passes if this is a number and is close to the expected value (within the given delta).
@@ -159,21 +171,33 @@ export interface BuiltinMatchers {
    * Default delta is 0.01.
    */
   closeTo(this: Matchers<number>, expected: number, delta?: number): this
+  toBeCloseTo(this: Matchers<number>, expected: number, delta?: number): this
 
   /** Passes if this is a number and is greater than the expected value. */
   gt(this: Matchers<number>, expected: number): this
+  toBeGt(this: Matchers<number>, expected: number): this
+  toBeGreaterThan(this: Matchers<number>, expected: number): this
   /** Passes if this is a number and is greater than or equal to the expected value. */
   gte(this: Matchers<number>, expected: number): this
+  toBeGte(this: Matchers<number>, expected: number): this
+  toBeGreaterThanOrEqual(this: Matchers<number>, expected: number): this
   /** Passes if this is a number and is less than the expected value. */
+
   lt(this: Matchers<number>, expected: number): this
+  toBeLt(this: Matchers<number>, expected: number): this
+  toBeLessThan(this: Matchers<number>, expected: number): this
   /** Passes if this is a number and is less than or equal to the expected value. */
   lte(this: Matchers<number>, expected: number): this
+  toBeLte(this: Matchers<number>, expected: number): this
+  toBeLessThanOrEqual(this: Matchers<number>, expected: number): this
 
   /** Passes if this is NaN. */
   NaN(this: Matchers<number>): this
+  toBeNaN(this: Matchers<number>): this
 
   /** Passes if this is a string or table, and its length (as returned by #) is equal to the expected value. */
   length(this: Matchers<string | readonly any[] | LuaTable | Record<number, any>>, expected: number): this
+  toHaveLength(this: Matchers<string | readonly any[] | LuaTable | Record<number, any>>, expected: number): this
 
   /**
    * Passes if this is a function, and throws an error when called.
@@ -182,17 +206,19 @@ export interface BuiltinMatchers {
    * Returns a new Assertion on the thrown error, or the returned value if this is negated.
    */
   error(this: Matchers<() => unknown>, message?: string | unknown): Matchers<unknown>
+  toError(this: Matchers<() => unknown>, message?: string | unknown): Matchers<unknown>
   /**
    * Alias for {@link error}
    */
   throw(this: Matchers<() => unknown>, message?: string | unknown): Matchers<unknown>
+  toThrow(this: Matchers<() => unknown>, message?: string | unknown): Matchers<unknown>
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface,@typescript-eslint/no-unused-vars
 export interface Matchers<T> extends BuiltinMatchers {}
 
 /** @noSelf */
-export interface MatcherFuncs {
+export interface AsymmetricMatcherFuncs {
   /**
    * Returns if the matcher passes.
    * @param value
@@ -206,57 +232,57 @@ export interface MatcherFuncs {
 /**
  * An asymmetric matcher.
  */
-export interface Matcher extends MatcherFuncs {
+export interface AsymmetricMatcher extends AsymmetricMatcherFuncs {
   _matcherBrand: never
 }
 /** @noSelf */
 export interface BuiltinExpectMatchers {
   /** Matches anything except nil. */
-  anything(): Matcher
+  anything(): AsymmetricMatcher
 
   /**
    * Matches values that are of the given type.
    *
    * Type must be a lua type, e.g. "number", "string", "table", or a TSTL class.
    */
-  any(type: LuaType | TstlClass): Matcher
+  any(type: LuaType | TstlClass): AsymmetricMatcher
 
   /**
    * Matches arrays that contain all the given values; i.e. the given array is a subset of the provided array.
    */
-  arrayContaining(expected: readonly unknown[]): Matcher
+  arrayContaining(expected: readonly unknown[]): AsymmetricMatcher
 
   /**
    * Matches objects (table) that match the given table.
    *
    * Similar to {@link Matchers.matchTable}; allows extra keys and deeply compares tables.
    */
-  tableContaining(expected: object): Matcher
+  tableContaining(expected: object): AsymmetricMatcher
 
   /**
    * Matches strings that contain the given substring.
    */
-  stringContaining(expected: string): Matcher
+  stringContaining(expected: string): AsymmetricMatcher
 
   /**
    * Matches strings that match the given pattern.
    */
-  stringMatching(expected: string): Matcher
+  stringMatching(expected: string): AsymmetricMatcher
 
   /**
    * Matches numbers that are close to the expected value (within the given delta).
    */
-  closeTo(expected: number, delta?: number): Matcher
+  closeTo(expected: number, delta?: number): AsymmetricMatcher
 
   /**
    * Matches a value exactly equal to the expected value, using rawequal equality.
    */
-  exactly(expected: unknown): Matcher
+  exactly(expected: unknown): AsymmetricMatcher
 }
 
 export interface ExpectMatchers extends BuiltinExpectMatchers {
   /** Matches everything; always returns true. */
-  _: Matcher
+  _: AsymmetricMatcher
 }
 
 export type InvertedExpectMatchers = Omit<BuiltinExpectMatchers, "anything">
@@ -264,7 +290,7 @@ export type InvertedExpectMatchers = Omit<BuiltinExpectMatchers, "anything">
 /**
  * The type for the `expect` function.
  */
-export interface ExpectObj extends ExpectMatchers {
+export interface Expect extends ExpectMatchers {
   <T>(this: void, subject: T): Matchers<T>
   not: InvertedExpectMatchers
 
@@ -400,20 +426,24 @@ export interface MockNoSelf<F extends AnySelflessFun> extends BaseMock<F>, Calla
 export interface BuiltinMatchers {
   /** Passes if the given mock has been called at least once. */
   called(this: Matchers<AnyFunction>): this
+  toHaveBeenCalled(this: Matchers<AnyFunction>): this
   /** Passes if the given mock has been called the given number of times. */
   calledTimes(this: Matchers<AnyFunction>, expected: number): this
+  toHaveBeenCalledTimes(this: Matchers<AnyFunction>, expected: number): this
   /**
    * Passes if the given mock has been called with the given arguments.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
   calledWith(this: Matchers<AnyFunction>, ...args: any): this
+  toHaveBeenCalledWith(this: Matchers<AnyFunction>, ...args: any): this
   /**
    * Passes if the last call to the given mock has the given arguments.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
   lastCalledWith(this: Matchers<AnyFunction>, ...args: any): this
+  toHaveBeenLastCalledWith(this: Matchers<AnyFunction>, ...args: any): this
   /**
    * Passes if the nth call to the given mock has the given arguments.
    *
@@ -422,6 +452,7 @@ export interface BuiltinMatchers {
    * Note: if this mock has not been yet called n times, this will fail regardless of if this assertion is negated or not.
    */
   nthCalledWith(this: Matchers<AnyFunction>, n: number, ...args: any): this
+  toHaveBeenNthCalledWith(this: Matchers<AnyFunction>, n: number, ...args: any): this
 
   /**
    * Passes if the given mock has returned with the given value.
@@ -429,12 +460,14 @@ export interface BuiltinMatchers {
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
   returnedWith(this: Matchers<AnyFunction>, value: unknown): this
+  toHaveReturnedWith(this: Matchers<AnyFunction>, value: unknown): this
   /**
    * Passes if the last call to the given mock has returned with the given value.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
   lastReturnedWith(this: Matchers<AnyFunction>, value: unknown): this
+  toHaveLastReturnedWith(this: Matchers<AnyFunction>, value: unknown): this
 
   /**
    * Passes if the nth call to the given mock has returned with the given value.
@@ -444,4 +477,5 @@ export interface BuiltinMatchers {
    * Note: if this mock has not been yet called n times, this will fail regardless of if this assertion is negated or not.
    */
   nthReturnedWith(this: Matchers<AnyFunction>, n: number, value: unknown): this
+  toHaveNthReturnedWith(this: Matchers<AnyFunction>, n: number, value: unknown): this
 }
