@@ -36,7 +36,7 @@ test("calls", () => {
 })
 
 test("invokes", () => {
-  const mock = mock1.fnNoSelf<(x: number, y: number) => number>()
+  const mock = mock1.fnNoSelf<(this: void, x: number, y: number) => number>()
   mock.invokes((a, b) => a + b)
 
   expect(mock(1, 2)).toBe(3)
@@ -71,7 +71,7 @@ test("invokes", () => {
 })
 
 test("invokesOnce", () => {
-  const mock = mock1.fnNoSelf<(x: number, y: number) => number>()
+  const mock = mock1.fnNoSelf<(this: void, x: number, y: number) => number>()
   mock.invokes((a, b) => a + b)
   mock.invokesOnce((a, b) => a * b)
   mock.invokesOnce((a, b) => a - b)

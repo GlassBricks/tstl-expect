@@ -420,6 +420,9 @@ export interface MockNoSelf<F extends AnySelflessFun> extends BaseMock<F>, Calla
   readonly hasSelfParam: false
   readonly contexts: []
 
+  invokes(fn: F): this
+  invokesOnce(fn: F): this
+
   (this: void, ...args: Parameters<F>): ReturnType<F>
 }
 
