@@ -274,6 +274,7 @@ function getTableDiff(
 
   // print equal keys up until MAX_KEYS - diffLength
 
+  table.sort(equalKeys, compareKeys)
   const len = math.min(MAX_KEYS - diffLength, equalKeys.length)
   for (const index of $range(1, len)) {
     const key = equalKeys[index - 1]
