@@ -298,7 +298,7 @@ export interface BaseMock<F extends AnyFunction> {
   readonly contexts: ThisParameterType<F>[]
 
   /**
-   * The return values of the last call of this mock.
+   * The return values of this mock.
    *
    * This currently does not support multi-return values.
    */
@@ -307,7 +307,6 @@ export interface BaseMock<F extends AnyFunction> {
   /**
    * The number of times this mock has been called.
    */
-
   readonly numCalls: number
 
   /**
@@ -316,14 +315,14 @@ export interface BaseMock<F extends AnyFunction> {
   clear(): this
 
   /**
-   * If this mock replaces a function on a table, this will restores original function.
+   * If this mock replaces a function on a table, this restores the original function.
    *
    * @see mock
    */
   reset(): void
 
   /**
-   * Sets the implementation of this mock (will call the given function instead).
+   * Sets the default implementation of this mock.
    */
   invokes(fn: F): this
   /**
@@ -347,14 +346,14 @@ export interface BaseMock<F extends AnyFunction> {
   returnsOnce(value: ReturnType<F>): this
 
   /**
-   * Gets the current implementation of this mock (not including invokesOnce).
+   * Gets the current implementation of this mock (not including invokesOnce implementations).
    */
   getImplementation(): F | undefined
 
   /**
    * Gets the implementation that will be used the next time this mock is called.
    *
-   * The default implementation (if nothing has been specified) is `()=>nil`.
+   * The implementation if nothing has been specified is `()=>nil`.
    */
   getNextImplementation(): F
 
@@ -389,16 +388,13 @@ export interface MockWithContext<F extends AnyContextualFun> extends BaseMock<F>
 /**
  * A mock function without the self parameter.
  *
- * All parameters are included in the `calls` array, including the self parameter if it exists.
+ * All parameters are included in the `calls` array.
  */
 export interface MockNoSelf<F extends AnySelflessFun> extends BaseMock<F>, CallableFunction {
   readonly hasSelfParam: false
-  contexts: []
+  readonly contexts: []
 
   (this: void, ...args: Parameters<F>): ReturnType<F>
-
-  invokes(fn: F): this
-  invokesOnce(fn: F): this
 }
 
 export interface BuiltinMatchers {
@@ -432,7 +428,6 @@ export interface BuiltinMatchers {
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-
   returnedWith(this: Matchers<AnyFunction>, value: unknown): this
   /**
    * Passes if the last call to the given mock has returned with the given value.
@@ -450,7 +445,3 @@ export interface BuiltinMatchers {
    */
   nthReturnedWith(this: Matchers<AnyFunction>, n: number, value: unknown): this
 }
-
-export type EnforceNoSelf<F extends AnySelflessFun> = F extends (...args: infer A) => infer R
-  ? (this: void, ...args: A) => R
-  : never

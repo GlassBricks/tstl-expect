@@ -9,7 +9,7 @@ export function isPrimitiveType(value: unknown): value is string | number | bool
 }
 export function isTstlClass(v: unknown): v is TstlClass {
   if (type(v) != "table") return false
-  return (v as any).prototype.constructor == v
+  return (v as any).prototype?.constructor == v
 }
 
 export function isCallable(v: unknown): v is AnySelflessFun {

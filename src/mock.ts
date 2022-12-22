@@ -5,7 +5,6 @@ import {
   AnySelflessFun,
   BaseMock,
   CalledParams,
-  EnforceNoSelf,
   MockNoSelf,
   MockWithContext,
   UnknownContextualFun,
@@ -139,14 +138,13 @@ class MockImpl implements BaseMock<AnySelflessFun> {
 }
 MockImpl.prototype._isMockFunction = true
 
-function doMockOn(table: any, key: any, hasSelfParam: boolean): MockImpl {
+function doMockOn(table: any, key: any, hasSelfParam: boolean, stubOut: boolean): MockImpl {
   const fn = table[key]
-  if (typeof fn != "function") {
+  if (!isCallable(fn)) {
     error("Cannot mock non-function value", 2)
   }
-  const mock = new MockImpl(hasSelfParam, fn, fn, table, key)
-  table[key] = mock
-  return mock
+  const impl = !stubOut ? fn : nil
+  return (table[key] = new MockImpl(hasSelfParam, impl, fn, table, key))
 }
 
 export namespace mock {
@@ -165,7 +163,7 @@ export namespace mock {
    *
    * @see fn
    */
-  export function fnNoSelf<F extends AnySelflessFun = UnknownSelflessFun>(impl?: F): MockNoSelf<EnforceNoSelf<F>> {
+  export function fnNoSelf<F extends AnySelflessFun = UnknownSelflessFun>(impl?: F): MockNoSelf<F> {
     return new MockImpl(false, impl, nil, nil, nil) as any
   }
 
@@ -181,22 +179,31 @@ export namespace mock {
   /**
    * Replaces a function on a table with a mock function. The mock has a self parameter. For a mock without a self parameter, use `onNoSelf`.
    *
-   * The mock will call the original function. To override/stub the original function, use `invokes`.
+   * @param table The table to replace the function on.
+   * @param key The key of the function to replace.
+   * @param stub whether to stub out the original function, or else keep the original implementation. Defaults to `false`.
    */
   export function on<K extends keyof T, T extends Record<K, AnyContextualFun>>(
     table: T,
     key: K,
+    stub: boolean = false,
   ): MockWithContext<T[K]> {
-    return doMockOn(table, key, true) as any
+    return doMockOn(table, key, true, stub) as any
   }
 
   /**
    * Replaces a function on a table with a mock function. The mock does not have a self parameter. For a mock with a self parameter, use `on`.
    *
-   * The mock will call the original function. To override/stub the original function, use `invokes`.
+   * @param table The table to replace the function on.
+   * @param key The key of the function to replace.
+   * @param stub whether to stub out the original function, or else keep the original implementation. Defaults to `false`.
    */
-  export function onNoSelf<K extends keyof T, T extends Record<K, AnySelflessFun>>(table: T, key: K): MockNoSelf<T[K]> {
-    return doMockOn(table, key, false) as any
+  export function onNoSelf<K extends keyof T, T extends Record<K, AnySelflessFun>>(
+    table: T,
+    key: K,
+    stub: boolean = false,
+  ): MockNoSelf<T[K]> {
+    return doMockOn(table, key, false, stub) as any
   }
 
   export type MockedObject<T> = {
@@ -208,27 +215,37 @@ export namespace mock {
   }
 
   /**
-   * Mocks all callable properties on the given table. All functions have mocked with a self parameter.
+   * Mocks all functions on the given table. All functions are assumed to have a self parameter.
+   *
+   * @param table The table to mock all functions on.
+   * @param stub whether to stub out the original functions, or else keep the original implementations. Defaults to `false`.
    *
    * @see BaseMock.reset
    * @see allNoSelf
    */
-  export function all<T extends object>(table: T): MockedObject<T> {
+  export function all<T extends object>(table: T, stub: boolean = false): MockedObject<T> {
     for (const [key, value] of pairs(table)) {
-      if (isCallable(value)) on(table as any, key)
+      if (isCallable(value)) {
+        doMockOn(table, key, true, stub)
+      }
     }
     return table as any
   }
 
   /**
-   * Mocks all callable properties on the given table. All functions have mocked without a self parameter.
+   * Mocks all functions on the given table. All functions are assumed to not have a self parameter.
+   *
+   * @param table The table to mock all functions on.
+   * @param stub whether to stub out the original functions, or else keep the original implementations. Defaults to `false`.
    *
    * @see BaseMock.reset
    * @see all
    */
-  export function allNoSelf<T extends object>(table: T): MockedObjectNoSelf<T> {
+  export function allNoSelf<T extends object>(table: T, stub: boolean = false): MockedObjectNoSelf<T> {
     for (const [key, value] of pairs(table)) {
-      if (isCallable(value)) onNoSelf(table as any, key)
+      if (isCallable(value)) {
+        doMockOn(table, key, false, stub)
+      }
     }
     return table as any
   }
@@ -243,7 +260,7 @@ export namespace mock {
   }
 
   /**
-   * Resets all mocks on a table (restores original implementation).
+   * Resets all mocks on a table mocked using `all` or `allNoSelf`. Restores the original implementations.
    */
   export function reset(obj: object): void {
     for (const [, value] of pairs(obj as any)) {
