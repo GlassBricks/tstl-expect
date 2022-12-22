@@ -34,10 +34,7 @@ function comparingMatcher(
     assertIsNumber(this, expected, "Expected")
     const pass = fn(received, expected)
     if (pass != this.isNot) return
-    this.fail(
-      `Expected: ${this.isNot ? "not " : ""}${received} ${operator} ${expected}\n` +
-        `Received: ${this.isNot ? "    " : ""}${received}`,
-    )
+    this.fail(`Expected: ${this.isNot ? "not " : ""}${operator} ${expected}\n` + `Received: ${received}`)
   }
 }
 
