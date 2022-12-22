@@ -255,7 +255,7 @@ export interface BuiltinExpectMatchers {
   /**
    * Matches objects (table) that match the given table.
    *
-   * Similar to {@link Matchers.matchTable}; allows extra keys and deeply compares tables.
+   * Similar to {@link Matchers#matchTable}, this allows extra keys and deeply compares tables.
    */
   tableContaining(expected: object): AsymmetricMatcher
 
