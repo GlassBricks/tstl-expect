@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.2
+
+- Equal keys in diff strings are sorted.
+- Handle metatables with __eq in diff strings.
+- Nth call matchers do not accept 0 as valid nth value.
+
 ## v0.3.1
 
 - Fix issues when number of expected params vs actual params is different in mock function matchers.
