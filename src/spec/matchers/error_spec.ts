@@ -101,7 +101,7 @@ expect(received).to.throw(expected)
 
 Expected error: { a: 3 }
 Received error: {
-* a: 2
+ *a: 2
 }
 `.trim(),
   )

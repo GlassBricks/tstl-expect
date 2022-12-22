@@ -220,7 +220,7 @@ function getTableDiff(
       if (depthExceeded) return "..."
       differences.set(
         key,
-        "%s- %s: %s".format(curIndent, keyStr, doPrettyPrint(value, nextIndent, depth + 1, expectedRefs as any)),
+        "%s -%s: %s".format(curIndent, keyStr, doPrettyPrint(value, nextIndent, depth + 1, expectedRefs as any)),
       )
     } else {
       const diff = doGetDiff(value, actualValue, nextIndent, depth + 1, expectedRefs as any, allowExtraKeys)
@@ -231,7 +231,7 @@ function getTableDiff(
       } else if (diff == true) {
         differences.set(
           key,
-          "%s* %s: %s".format(
+          "%s *%s: %s".format(
             curIndent,
             keyStr,
             doPrettyPrint(actualValue, nextIndent, depth + 1, expectedRefs as any),
@@ -239,7 +239,7 @@ function getTableDiff(
         )
       } else {
         // table diff
-        differences.set(key, "%s* %s: %s".format(curIndent, keyStr, diff satisfies string))
+        differences.set(key, "%s *%s: %s".format(curIndent, keyStr, diff satisfies string))
       }
     }
   }
@@ -252,7 +252,7 @@ function getTableDiff(
       } else {
         differences.set(
           key,
-          "%s+ %s: %s".format(
+          "%s +%s: %s".format(
             curIndent,
             formatKey(key),
             doPrettyPrint(value, nextIndent, depth + 1, expectedRefs as any),

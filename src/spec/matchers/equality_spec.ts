@@ -200,7 +200,7 @@ expect(received).to.equal(expected)
 
 Expected: { a: 3 }
 Received: {
-* a: 2
+ *a: 2
 }
 `.trim(),
     )
@@ -216,7 +216,7 @@ expect(received).to.equal(expected)
 
 Expected: { a: 2 }
 Received: {
-+ b: 3,
+ +b: 3,
   a: 2
 }
 `.trim(),
@@ -232,7 +232,7 @@ expect(received).to.equal(expected)
 
 Expected: { a: 2, b: 3 }
 Received: {
-- b: 3,
+ -b: 3,
   a: 2
 }
 `.trim(),
@@ -323,7 +323,7 @@ expect(received).to.matchTable(expected)
 
 Expected: { a: 2, b: 4 }
 Received: {
-- b: 4,
+ -b: 4,
   a: 2
 }
 `.trim(),
@@ -359,7 +359,7 @@ expect(received).to.equal(expected)
 
 Expected: { a: expect.any("string") }
 Received: {
-* a: 2 (matcher failed)
+ *a: 2 (matcher failed)
 }
 `.trim(),
     )

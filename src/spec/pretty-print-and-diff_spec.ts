@@ -251,22 +251,22 @@ describe("diff", () => {
     test("different value", () => {
       assert.equal(
         `{
-* a: 2
+ *a: 2
 }`,
         getDiffString({ a: 1 }, { a: 2 }),
       )
       assert.equal(
         `{
-* a: {
-  * b: 2
+ *a: {
+   *b: 2
   }
 }`,
         getDiffString({ a: { b: 1 } }, { a: { b: 2 } }),
       )
       assert.equal(
         `{
-* a: {
-  * b: 2
+ *a: {
+   *b: 2
   },
   c: 3
 }`,
@@ -274,7 +274,7 @@ describe("diff", () => {
       )
       assert.equal(
         `{
-* [1]: 2
+ *[1]: 2
 }`,
         getDiffString([1], [2]),
       )
@@ -282,7 +282,7 @@ describe("diff", () => {
     test("extra key", () => {
       assert.equal(
         `{
-+ a: 1
+ +a: 1
 }`,
         getDiffString({}, { a: 1 }),
       )
@@ -290,7 +290,7 @@ describe("diff", () => {
     test("missing key", () => {
       assert.equal(
         `{
-- a: 1
+ -a: 1
 }`,
         getDiffString({ a: 1 }, {}),
       )
@@ -298,10 +298,10 @@ describe("diff", () => {
     test("too deeply nested", () => {
       assert.equal(
         `{
-* a: {
-  * b: {
-    * c: {
-      * d: ...
+ *a: {
+   *b: {
+     *c: {
+       *d: ...
       }
     }
   }
@@ -314,7 +314,13 @@ describe("diff", () => {
       assert.Nil(diff)
 
       const diff2 = getDiffString({ a: 1 }, { a: 2, b: 2 }, true)
-      assert.equal(`{\n* a: 2,\n  b: 2\n}`, diff2)
+      assert.equal(
+        `{
+ *a: 2,
+  b: 2
+}`,
+        diff2,
+      )
     })
   })
 })
