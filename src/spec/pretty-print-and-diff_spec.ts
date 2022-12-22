@@ -1,5 +1,7 @@
 import { getDiffString, prettyPrint } from "../pretty-print-and-diff"
 
+require("busted.runner")()
+
 describe("pretty print", () => {
   test("primitives", () => {
     assert.equal('"hello"', prettyPrint("hello"))
@@ -322,5 +324,17 @@ describe("diff", () => {
         diff2,
       )
     })
+  })
+
+  test("metatables with __eq", () => {
+    const metatable: LuaMetatable<any> = {
+      __eq(other) {
+        return this.a == other.a
+      },
+    }
+    const a = setmetatable({ a: 1 }, metatable)
+    const b = setmetatable({ a: 1 }, metatable)
+    assert.Nil(getDiffString(a, b))
+    assert.equal(`{ a: 1 }`, getDiffString(a, { a: 1 }))
   })
 })

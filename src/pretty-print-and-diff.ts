@@ -163,7 +163,7 @@ function printNormalTable(
   }
 }
 
-const getmeta = getmetatable
+const getmeta = debug.getmetatable
 /**
  * Returns:
  *
@@ -188,6 +188,8 @@ function doGetDiff(
   if (expectedType == "table" && actualType == "table") {
     const meta = getmeta(expected)
     if (meta && (meta.__eq || (meta as any).__pairs)) return true
+    const meta2 = getmeta(actual)
+    if (meta2 && (meta2.__eq || (meta2 as any).__pairs)) return true
 
     return getTableDiff(expected as LuaTable, actual as LuaTable, curIndent, depth, expectedRefs, allowExtraKeys)
   }
@@ -286,7 +288,7 @@ function getTableDiff(
 
 export function getDiffString(expected: unknown, actual: unknown, allowExtraKeys = false): string | undefined {
   const diff = doGetDiff(expected, actual, "", 0, new LuaMap(), allowExtraKeys)
-  if (diff == true) return prettyPrint(actual)
+  if (diff == true) return prettyPrint(actual, 1)
   return diff
 }
 export function deepCompare(expected: unknown, actual: unknown, allowExtraKeys = false): boolean {
