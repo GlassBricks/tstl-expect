@@ -8,9 +8,11 @@ test("to.have.length", () => {
   })
   assert.equals(
     error,
-    `expect(received).to.have.length(expected)\n\n` +
-      `Expected length: 4\nReceived length: 5\n` +
-      `Received value: "hello"`,
+    `expect(received).to.have.length(expected)
+
+Expected length: 4
+Received length: 5
+Received value: "hello"`,
   )
 
   expect([1, 2, 3]).to.have.length(3)
@@ -20,9 +22,11 @@ test("to.have.length", () => {
   })
   assert.equals(
     error2,
-    `expect(received).to.have.length(expected)\n\n` +
-      `Expected length: 4\nReceived length: 3\n` +
-      `Received value: [1, 2, 3]`,
+    `expect(received).to.have.length(expected)
+
+Expected length: 4
+Received length: 3
+Received value: [1, 2, 3]`,
   )
 })
 
@@ -38,14 +42,23 @@ test("contain", () => {
   const error = assert.error(() => {
     expect("hello").to.contain("a")
   })
-  assert.equals(error, `expect(received).to.contain(expected)\n\n` + `Expected: to contain "a"\n` + `Received: "hello"`)
+  assert.equals(
+    error,
+    `expect(received).to.contain(expected)
+
+Expected: to contain "a"
+Received: "hello"`,
+  )
 
   const error2 = assert.error(() => {
     expect([1, 2, 3]).not.to.contain(2)
   })
   assert.equals(
     error2,
-    `expect(received).not.to.contain(expected)\n\n` + `Expected: not to contain 2\n` + `Received: [1, 2, 3]`,
+    `expect(received).not.to.contain(expected)
+
+Expected: not to contain 2
+Received: [1, 2, 3]`,
   )
 })
 
@@ -57,7 +70,10 @@ test("haveKey", () => {
   })
   assert.equals(
     error,
-    `expect(received).to.have.key(expected)\n\n` + `Expected: to have key "c"\n` + `Received: { a: 1, b: 2 }`,
+    `expect(received).to.have.key(expected)
+
+Expected: to have key "c"
+Received: { a: 1, b: 2 }`,
   )
 
   const error2 = assert.error(() => {
@@ -65,6 +81,9 @@ test("haveKey", () => {
   })
   assert.equals(
     error2,
-    `expect(received).not.to.have.key(expected)\n\n` + `Expected: not to have key "a"\n` + `Received: { a: 1, b: 2 }`,
+    `expect(received).not.to.have.key(expected)
+
+Expected: not to have key "a"
+Received: { a: 1, b: 2 }`,
   )
 })

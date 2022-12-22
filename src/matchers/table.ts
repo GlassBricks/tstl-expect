@@ -17,9 +17,9 @@ export function length(this: MatcherContext, received: unknown, expected: unknow
   const pass = length == expected
   if (pass != this.isNot) return
   this.fail(
-    `Expected length: ${this.isNot ? "not " : ""}${expected}\n` +
-      `Received length: ${length}\n` +
-      `Received value: ${prettyPrint(received)}`,
+    `Expected length: ${this.isNot ? "not " : ""}${expected}
+Received length: ${length}
+Received value: ${prettyPrint(received)}`,
   )
 }
 
@@ -28,8 +28,8 @@ export function haveKey(this: MatcherContext, received: unknown, expected: unkno
   const pass = type(received) == "table" && (received as LuaTable).has(expected)
   if (pass != this.isNot) return
   this.fail(
-    `Expected: ${this.isNot ? "not " : ""}to have key ${prettyPrint(expected)}\n` +
-      `Received: ${prettyPrint(received)}`,
+    `Expected: ${this.isNot ? "not " : ""}to have key ${prettyPrint(expected)}
+Received: ${prettyPrint(received)}`,
   )
 }
 
@@ -46,7 +46,8 @@ export function contain(this: MatcherContext, received: unknown, expected: unkno
   }
   if (pass != this.isNot) return
   this.fail(
-    `Expected: ${this.isNot ? "not " : ""}to contain ${prettyPrint(expected)}\n` + `Received: ${prettyPrint(received)}`,
+    `Expected: ${this.isNot ? "not " : ""}to contain ${prettyPrint(expected)}
+Received: ${prettyPrint(received)}`,
   )
 }
 
@@ -60,6 +61,7 @@ export function containEqual(this: MatcherContext, received: unknown, expected: 
   }
   if (pass != this.isNot) return
   this.fail(
-    `Expected: ${this.isNot ? "not " : ""}to contain ${prettyPrint(expected)}\n` + `Received: ${prettyPrint(received)}`,
+    `Expected: ${this.isNot ? "not " : ""}to contain ${prettyPrint(expected)}
+Received: ${prettyPrint(received)}`,
   )
 }

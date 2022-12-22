@@ -138,16 +138,22 @@ export function called(this: MatcherContext, received: unknown, numTimes?: unkno
 
   if (this.isNot) {
     this.fail(
-      "Expected: not to be called\n" +
-        `Called: ${received.numCalls} times\n` +
-        `Called with:\n` +
-        printCalls(received.calls),
+      `Expected: not to be called
+Called: ${received.numCalls} times
+Called with:
+${printCalls(received.calls)}`,
       nil,
       "",
       received.getMockName(),
     )
   } else {
-    this.fail("Expected: to be called\n" + `Called: 0 times`, nil, "", received.getMockName())
+    this.fail(
+      `Expected: to be called
+Called: 0 times`,
+      nil,
+      "",
+      received.getMockName(),
+    )
   }
 }
 
@@ -159,17 +165,19 @@ export function calledTimes(this: MatcherContext, received: unknown, numTimes: u
 
   if (this.isNot) {
     this.fail(
-      `Expected number of calls: not ${numTimes}\n` + `Called with:\n` + printCalls(received.calls),
+      `Expected number of calls: not ${numTimes}
+Called with:
+${printCalls(received.calls)}`,
       nil,
       nil,
       received.getMockName(),
     )
   } else {
     this.fail(
-      `Expected number of calls: ${numTimes}\n` +
-        `Received number of calls: ${received.numCalls}\n` +
-        `Called with:\n` +
-        printCalls(received.calls),
+      `Expected number of calls: ${numTimes}
+Received number of calls: ${received.numCalls}
+Called with:
+${printCalls(received.calls)}`,
       nil,
       nil,
       received.getMockName(),
@@ -215,7 +223,13 @@ export function lastCalledWith(this: MatcherContext, received: unknown, ...expec
 
   const { numCalls, calls, lastCall } = received
   if (numCalls == 0) {
-    this.fail("Expected: at least one call\n" + `Received: 0 calls`, nil, "", received.getMockName())
+    this.fail(
+      `Expected: at least one call
+Received: 0 calls`,
+      nil,
+      "",
+      received.getMockName(),
+    )
   }
 
   const expected = [...expectedArgs]
@@ -225,15 +239,18 @@ export function lastCalledWith(this: MatcherContext, received: unknown, ...expec
   const indices = [numCalls - 2, numCalls - 1]
   if (this.isNot) {
     this.fail(
-      `Expected: not ${printArgs(expected)}\n` + `Called with:\n${printCallsAtIndices(calls, indices, numCalls - 1)}`,
+      `Expected: not ${printArgs(expected)}
+Called with:
+${printCallsAtIndices(calls, indices, numCalls - 1)}`,
       nil,
       "...expected",
       received.getMockName(),
     )
   } else {
     this.fail(
-      `Expected: ${printArgs(expected)}\n` +
-        `Called with:\n${printCallsAtIndicesComparing(calls, expected, indices, numCalls - 1)}`,
+      `Expected: ${printArgs(expected)}
+Called with:
+${printCallsAtIndicesComparing(calls, expected, indices, numCalls - 1)}`,
       nil,
       "...expected",
       received.getMockName(),
@@ -248,11 +265,11 @@ export function nthCalledWith(this: MatcherContext, received: unknown, n: unknow
   const { numCalls, calls } = received
   if (n > numCalls) {
     this.fail(
-      `n: ${n}\n` +
-        `Expected number of calls: >= ${n}\n` +
-        `Received number of calls: ${numCalls}\n` +
-        `Called with:\n` +
-        printCalls(calls),
+      `n: ${n}
+Expected number of calls: >= ${n}
+Received number of calls: ${numCalls}
+Called with:
+${printCalls(calls)}`,
       nil,
       "n, ...expected",
       received.getMockName(),
@@ -265,9 +282,10 @@ export function nthCalledWith(this: MatcherContext, received: unknown, n: unknow
   if (this.isNot) {
     const indices = [n - 2, n - 1, n]
     this.fail(
-      `n: ${n}\n` +
-        `Expected: not ${printArgs(expectedArgs)}\n` +
-        `Called with:\n${printCallsAtIndices(calls, indices, n - 1)}`,
+      `n: ${n}
+Expected: not ${printArgs(expectedArgs)}
+Called with:
+${printCallsAtIndices(calls, indices, n - 1)}`,
       nil,
       "n, ...expected",
       received.getMockName(),
@@ -280,9 +298,10 @@ export function nthCalledWith(this: MatcherContext, received: unknown, n: unknow
     if (firstAfter == -1) firstAfter = n
     const indices = [firstBefore, n - 1, firstAfter]
     this.fail(
-      `n: ${n}\n` +
-        `Expected: ${printArgs(expectedArgs)}\n` +
-        `Called with:\n${printCallsAtIndicesComparing(calls, expectedArgs, indices, n - 1)}`,
+      `n: ${n}
+Expected: ${printArgs(expectedArgs)}
+Called with:
+${printCallsAtIndicesComparing(calls, expectedArgs, indices, n - 1)}`,
       nil,
       "n, ...expected",
       received.getMockName(),
@@ -342,16 +361,18 @@ export function returnedWith(this: MatcherContext, received: unknown, expected: 
       }
     }
     this.fail(
-      `Expected: not ${prettyPrint(expected)}\n` +
-        `Received:\n${printReturnValuesAtIndices(returnValues, numCalls, indices, nil)}`,
+      `Expected: not ${prettyPrint(expected)}
+Received:
+${printReturnValuesAtIndices(returnValues, numCalls, indices, nil)}`,
       nil,
       nil,
       received.getMockName(),
     )
   } else {
     this.fail(
-      `Expected: ${prettyPrint(expected)}\n` +
-        `Received:\n${printReturnValuesComparing(returnValues, numCalls, expected)}`,
+      `Expected: ${prettyPrint(expected)}
+Received:
+${printReturnValuesComparing(returnValues, numCalls, expected)}`,
       nil,
       nil,
       received.getMockName(),
@@ -372,17 +393,19 @@ export function lastReturnedWith(this: MatcherContext, received: unknown, expect
   const indices = [numCalls - 2, numCalls - 1]
   if (this.isNot) {
     this.fail(
-      `Expected: not ${prettyPrint(expected)}\n` +
-        `Received:\n${printReturnValuesAtIndices(returnValues, numCalls, indices, numCalls - 1)}`,
+      `Expected: not ${prettyPrint(expected)}
+Received:
+${printReturnValuesAtIndices(returnValues, numCalls, indices, numCalls - 1)}`,
       nil,
       nil,
       received.getMockName(),
     )
   } else {
     this.fail(
-      `Expected: ${prettyPrint(expected)}\n` +
-        `Received:\n${printReturnValuesAtIndicesComparing(returnValues, numCalls, expected, indices, numCalls - 1)}\n` +
-        `Number of calls: ${numCalls}`,
+      `Expected: ${prettyPrint(expected)}
+Received:
+${printReturnValuesAtIndicesComparing(returnValues, numCalls, expected, indices, numCalls - 1)}
+Number of calls: ${numCalls}`,
       nil,
       nil,
       received.getMockName(),
@@ -396,10 +419,11 @@ export function nthReturnedWith(this: MatcherContext, received: unknown, n: unkn
   const { numCalls, returnValues } = received
   if (n > numCalls) {
     this.fail(
-      `n: ${n}\n` +
-        `Expected number of calls: >= ${n}\n` +
-        `Received number of calls: ${numCalls}\n` +
-        `Received:\n${printReturnValues(returnValues, numCalls)}`,
+      `n: ${n}
+Expected number of calls: >= ${n}
+Received number of calls: ${numCalls}
+Received:
+${printReturnValues(returnValues, numCalls)}`,
       nil,
       "n, expected",
       received.getMockName(),
@@ -411,10 +435,11 @@ export function nthReturnedWith(this: MatcherContext, received: unknown, n: unkn
   if (this.isNot) {
     const indices = [n - 2, n - 1, n]
     this.fail(
-      `n: ${n}\n` +
-        `Expected: not ${prettyPrint(expected)}\n` +
-        `Received:\n${printReturnValuesAtIndices(returnValues, numCalls, indices, n - 1)}\n` +
-        `Number of calls: ${numCalls}`,
+      `n: ${n}
+Expected: not ${prettyPrint(expected)}
+Received:
+${printReturnValuesAtIndices(returnValues, numCalls, indices, n - 1)}
+Number of calls: ${numCalls}`,
       nil,
       "n, expected",
       received.getMockName(),
@@ -439,9 +464,11 @@ export function nthReturnedWith(this: MatcherContext, received: unknown, n: unkn
     if (firstAfter == -1) firstAfter = n
     const indices = [firstBefore, n - 1, firstAfter]
     this.fail(
-      `n: ${n}\n` +
-        `Expected: ${prettyPrint(expected)}\n` +
-        `Received:\n${printReturnValuesAtIndicesComparing(returnValues, numCalls, expected, indices, n - 1)}\n`,
+      `n: ${n}
+Expected: ${prettyPrint(expected)}
+Received:
+${printReturnValuesAtIndicesComparing(returnValues, numCalls, expected, indices, n - 1)}
+`,
       nil,
       "n, expected",
       received.getMockName(),

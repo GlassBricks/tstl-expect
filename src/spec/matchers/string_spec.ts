@@ -5,7 +5,13 @@ test("to.match", () => {
   const error = assert.error(() => {
     expect("hello").to.match("heh")
   })
-  assert.equals(error, `expect(received).to.match(expected)\n\n` + `Expected pattern: "heh"\nReceived string: "hello"`)
+  assert.equals(
+    error,
+    `expect(received).to.match(expected)
+
+Expected pattern: "heh"
+Received string: "hello"`,
+  )
 })
 
 test("to.not.match", () => {
@@ -15,7 +21,10 @@ test("to.not.match", () => {
   })
   assert.equals(
     error,
-    `expect(received).not.to.match(expected)\n\n` + `Expected pattern: not "he."\n` + `Received string: "hello"`,
+    `expect(received).not.to.match(expected)
+
+Expected pattern: not "he."
+Received string: "hello"`,
   )
 })
 
@@ -26,7 +35,10 @@ test("to.include", () => {
   })
   assert.equals(
     error,
-    `expect(received).to.include(expected)\n\n` + `Expected substring: "eh"\nReceived string: "hello"`,
+    `expect(received).to.include(expected)
+
+Expected substring: "eh"
+Received string: "hello"`,
   )
 })
 
@@ -37,6 +49,9 @@ test("to.not.include", () => {
   })
   assert.equals(
     error,
-    `expect(received).not.to.include(expected)\n\n` + `Expected substring: not "ell"\n` + `Received string: "hello"`,
+    `expect(received).not.to.include(expected)
+
+Expected substring: not "ell"
+Received string: "hello"`,
   )
 })

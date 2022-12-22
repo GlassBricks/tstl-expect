@@ -27,7 +27,12 @@ Returned value: 3`,
       .and.to.contain("test2")
   })
   expect(err2).to.include(
-    `expect(received).to.throw().and.to.contain(expected)\n\n` + `Expected: to contain "test2"\nReceived: "`,
+    `
+expect(received).to.throw().and.to.contain(expected)
+
+Expected: to contain "test2"
+Received: "
+`.trim(),
   )
 })
 
@@ -42,31 +47,37 @@ test("to throw with string include", () => {
     expect(() => error("foo bar")).to.throw("baz")
   })
   expect(err).to.include(
-    `expect(received).to.throw(expected)
+    `
+expect(received).to.throw(expected)
 
 Expected error: including "baz"
-Received error: "`,
+Received error: "
+`.trim(),
   )
 
   const err2 = assert.error(() => {
     expect(() => error("foo bar")).not.to.throw("foo")
   })
   expect(err2).to.include(
-    `expect(received).not.to.throw(expected)
+    `
+expect(received).not.to.throw(expected)
 
 Expected error: not including "foo"
-Received error: "`,
+Received error: "
+`.trim(),
   )
 
   const err3 = assert.error(() => {
     expect(() => 0).to.throw("foo")
   })
   expect(err3).to.include(
-    `expect(received).to.throw(expected)
+    `
+expect(received).to.throw(expected)
 
 Expected error: including "foo"
 Received function did not error
-Returned value: 0`,
+Returned value: 0
+`.trim(),
   )
 })
 
@@ -84,13 +95,15 @@ test("to throw with value", () => {
       throw { a: 2 }
     }).to.throw({ a: 3 })
   })
-  expect(err).to.include(
-    `expect(received).to.throw(expected)
+  expect(err).to.be(
+    `
+expect(received).to.throw(expected)
 
 Expected error: { a: 3 }
 Received error: {
 * a: 2
-}`,
+}
+`.trim(),
   )
 
   const err2 = assert.error(() => {
@@ -98,21 +111,25 @@ Received error: {
       throw { a: 2 }
     }).not.to.throw({ a: 2 })
   })
-  expect(err2).to.include(
-    `expect(received).not.to.throw(expected)
+  expect(err2).to.be(
+    `
+expect(received).not.to.throw(expected)
 
 Expected error: not { a: 2 }
-Received error: { a: 2 }`,
+Received error: { a: 2 }
+`.trim(),
   )
 
   const err3 = assert.error(() => {
     expect(() => 0).to.throw({ a: 2 })
   })
-  expect(err3).to.include(
-    `expect(received).to.throw(expected)
+  expect(err3).to.be(
+    `
+expect(received).to.throw(expected)
 
 Expected error: { a: 2 }
 Received function did not error
-Returned value: 0`,
+Returned value: 0
+`.trim(),
   )
 })

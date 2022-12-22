@@ -18,10 +18,10 @@ export function closeTo(this: MatcherContext, received: unknown, expected: unkno
   if (pass != this.isNot) return
 
   this.fail(
-    `Expected: ${this.isNot ? "not " : ""}${expected}\n` +
-      `Received: ${received}\n` +
-      `Expected difference: ${this.isNot ? ">=" : "<"} ${precision}\n` +
-      `Received difference: ${Math.abs(received - expected)}`,
+    `Expected: ${this.isNot ? "not " : ""}${expected}
+Received: ${received}
+Expected difference: ${this.isNot ? ">=" : "<"} ${precision}
+Received difference: ${Math.abs(received - expected)}`,
   )
 }
 

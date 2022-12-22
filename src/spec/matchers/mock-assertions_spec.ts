@@ -4,7 +4,8 @@ test("called", () => {
   const mock = mock1.fnNoSelf()
   expect(mock).to.not.be.called()
   expect(() => expect(mock).to.be.called()).to.throw(
-    `expect(mockFunction).to.be.called()
+    `
+expect(mockFunction).to.be.called()
 
 Expected: to be called
 Called: 0 times
@@ -15,7 +16,8 @@ Called: 0 times
   expect(mock.calls).to.matchTable([[1, 2]])
 
   expect(() => expect(mock).to.not.be.called()).to.throw(
-    `expect(mockFunction).to.not.be.called()
+    `
+expect(mockFunction).to.not.be.called()
 
 Expected: not to be called
 Called: 1 times
@@ -30,7 +32,8 @@ test("calledTimes", () => {
   expect(mock).to.be.calledTimes(0)
   expect(mock).to.not.be.calledTimes(1)
   expect(() => expect(mock).to.be.calledTimes(1)).to.throw(
-    `expect(mockFunction).to.be.calledTimes(expected)
+    `
+expect(mockFunction).to.be.calledTimes(expected)
 
 Expected number of calls: 1
 Received number of calls: 0
@@ -41,7 +44,8 @@ Called with:
   mock(3, 4)
   expect(mock.calls).to.matchTable([[1, 2]])
   expect(() => expect(mock).to.not.be.calledTimes(2)).to.throw(
-    `expect(mockFunction).to.not.be.calledTimes(expected)
+    `
+expect(mockFunction).to.not.be.calledTimes(expected)
 
 Expected number of calls: not 2
 Called with:
@@ -50,7 +54,8 @@ Called with:
 `.trim(),
   )
   expect(() => expect(mock).to.be.calledTimes(1)).to.throw(
-    `expect(mockFunction).to.be.calledTimes(expected)
+    `
+expect(mockFunction).to.be.calledTimes(expected)
 
 Expected number of calls: 1
 Received number of calls: 2
@@ -72,7 +77,8 @@ test("calledWith", () => {
     .not.to.be.calledWith(5, 6)
 
   expect(() => expect(mock).to.be.calledWith(5, 4)).to.throw(
-    `expect(mockFunction).to.be.calledWith(...expected)
+    `
+expect(mockFunction).to.be.calledWith(...expected)
 
 Expected: 5, 4
 Called with:
@@ -82,7 +88,8 @@ Called with:
   )
 
   expect(() => expect(mock).not.to.be.calledWith(1, 2)).to.throw(
-    `expect(mockFunction).not.to.be.calledWith(...expected)
+    `
+expect(mockFunction).not.to.be.calledWith(...expected)
 
 Expected: not 1, 2
 Called with:
@@ -99,7 +106,8 @@ test("lastCalledWith", () => {
   expect(mock).to.be.lastCalledWith(3, 4).to.be.lastCalledWith(expect.any("number"), 4).not.to.be.lastCalledWith(5, 6)
 
   expect(() => expect(mock).to.be.lastCalledWith(5, 4)).to.throw(
-    `expect(mockFunction).to.be.lastCalledWith(...expected)
+    `
+expect(mockFunction).to.be.lastCalledWith(...expected)
 
 Expected: 5, 4
 Called with:
@@ -109,7 +117,8 @@ Called with:
   )
 
   expect(() => expect(mock).not.to.be.lastCalledWith(3, 4)).to.throw(
-    `expect(mockFunction).not.to.be.lastCalledWith(...expected)
+    `
+expect(mockFunction).not.to.be.lastCalledWith(...expected)
 
 Expected: not 3, 4
 Called with:
@@ -131,7 +140,8 @@ test("nthCalledWith", () => {
     .not.to.be.nthCalledWith(1, 5, 6)
 
   expect(() => expect(mock).to.be.nthCalledWith(4, 5, 4)).to.throw(
-    `expect(mockFunction).to.be.nthCalledWith(n, ...expected)
+    `
+expect(mockFunction).to.be.nthCalledWith(n, ...expected)
 
 n: 4
 Expected number of calls: >= 4
@@ -144,7 +154,8 @@ Called with:
   )
 
   expect(() => expect(mock).not.to.be.nthCalledWith(2, 3, 4)).to.throw(
-    `expect(mockFunction).not.to.be.nthCalledWith(n, ...expected)
+    `
+expect(mockFunction).not.to.be.nthCalledWith(n, ...expected)
 
 n: 2
 Expected: not 3, 4
@@ -156,7 +167,8 @@ Called with:
   )
 
   expect(() => expect(mock).to.be.nthCalledWith(1, 3, 4)).to.throw(
-    `expect(mockFunction).to.be.nthCalledWith(n, ...expected)
+    `
+expect(mockFunction).to.be.nthCalledWith(n, ...expected)
 
 n: 1
 Expected: 3, 4
@@ -181,7 +193,8 @@ test("returnedWith", () => {
     .not.to.have.returnedWith(expect.any("string"))
 
   expect(() => expect(mock).to.have.returnedWith(3)).to.throw(
-    `expect(mockFunction).to.have.returnedWith(expected)
+    `
+expect(mockFunction).to.have.returnedWith(expected)
 
 Expected: 3
 Received:
@@ -191,7 +204,8 @@ Received:
   )
 
   expect(() => expect(mock).not.to.have.returnedWith(1)).to.throw(
-    `expect(mockFunction).not.to.have.returnedWith(expected)
+    `
+expect(mockFunction).not.to.have.returnedWith(expected)
 
 Expected: not 1
 Received:
@@ -213,7 +227,8 @@ test("lastReturnedWith", () => {
     .not.to.have.lastReturnedWith(expect.any("string"))
 
   expect(() => expect(mock).to.have.lastReturnedWith(1)).to.throw(
-    `expect(mockFunction).to.have.lastReturnedWith(expected)
+    `
+expect(mockFunction).to.have.lastReturnedWith(expected)
 
 Expected: 1
 Received:
@@ -223,7 +238,8 @@ Received:
   )
 
   expect(() => expect(mock).not.to.have.lastReturnedWith(2)).to.throw(
-    `expect(mockFunction).not.to.have.lastReturnedWith(expected)
+    `
+expect(mockFunction).not.to.have.lastReturnedWith(expected)
 
 Expected: not 2
 Received:
@@ -247,7 +263,8 @@ test("nthReturnedWith", () => {
     .not.to.have.nthReturnedWith(3, expect.any("string"))
 
   expect(() => expect(mock).to.have.nthReturnedWith(4, 3)).to.throw(
-    `expect(mockFunction).to.have.nthReturnedWith(n, expected)
+    `
+expect(mockFunction).to.have.nthReturnedWith(n, expected)
 
 n: 4
 Expected number of calls: >= 4
@@ -260,7 +277,8 @@ Received:
   )
 
   expect(() => expect(mock).not.to.have.nthReturnedWith(2, 2)).to.throw(
-    `expect(mockFunction).not.to.have.nthReturnedWith(n, expected)
+    `
+expect(mockFunction).not.to.have.nthReturnedWith(n, expected)
 
 n: 2
 Expected: not 2
@@ -272,7 +290,8 @@ Received:
   )
 
   expect(() => expect(mock).to.have.nthReturnedWith(1, 2)).to.throw(
-    `expect(mockFunction).to.have.nthReturnedWith(n, expected)
+    `
+expect(mockFunction).to.have.nthReturnedWith(n, expected)
 
 n: 1
 Expected: 2
@@ -298,7 +317,8 @@ test("nth returned with nil return values", () => {
   expect(fn).to.have.returnedWith(5)
 
   expect(() => expect(fn).to.have.nthReturnedWith(2, 5)).to.throw(
-    `expect(mockFunction).to.have.nthReturnedWith(n, expected)
+    `
+expect(mockFunction).to.have.nthReturnedWith(n, expected)
 
 n: 2
 Expected: 5

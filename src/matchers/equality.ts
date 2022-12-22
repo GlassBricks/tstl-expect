@@ -51,7 +51,7 @@ export function a(this: MatcherContext, received: unknown, expected: unknown): v
   if (type(expected) == "string") {
     const pass = type(received) == expected
     if (pass != this.isNot) return
-    this.fail(`Expected:${this.isNot ? " not" : ""} a ${expected}\n` + `Received: ${prettyPrint(received)}`, nil)
+    this.fail(`Expected:${this.isNot ? " not" : ""} a ${expected}\nReceived: ${prettyPrint(received)}`, nil)
   } else if (isTstlClass(expected)) {
     const pass = received instanceof expected
     if (pass != this.isNot) return
