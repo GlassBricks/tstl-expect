@@ -58,7 +58,6 @@ export interface Matchers<T> {
 export type LuaType = "number" | "string" | "boolean" | "table" | "function" | "userdata" | "thread" | "nil"
 export type TstlClass = Function
 
-export type InferIterableType<T> = T extends Iterable<infer U> ? U : unknown
 export type ValueOrAsymmetricMatcher<T> = T | AsymmetricMatcher
 export type DeepValueOrMatcher<T> =
   | (T extends object
@@ -67,25 +66,36 @@ export type DeepValueOrMatcher<T> =
         }
       : T)
   | AsymmetricMatcher
+export type DeepPartialValueOrMatcher<T> =
+  | (T extends object
+      ? {
+          [K in keyof T]?: DeepPartialValueOrMatcher<T[K]>
+        }
+      : T)
+  | AsymmetricMatcher
+
+export type ValueOrMatcherArgs<T> = {
+  [K in keyof T]: ValueOrAsymmetricMatcher<T[K]>
+}
 
 export interface BuiltinMatchers<T> {
   /**
    * Passes if this equals the expected value, using rawequal equality.
    */
-  toBe<V = T>(expected: V): this
+  toBe<V = unknown>(expected: V): this
 
   /**
    * Passes if this equals the expected value. Deeply compares tables.
    * Asymmetric matchers are supported in the expected value.
    */
-  toEqual(expected: unknown): this
+  toEqual<V = unknown>(expected: DeepValueOrMatcher<V>): this
 
   /**
    * Passes if all properties in this table are present and equal in the expected table.
    * Similar to `equal`, except this allows for extra keys.
    * Asymmetric matchers are supported in the expected value.
    */
-  toMatchTable(expected: unknown): this
+  toMatchTable<V = unknown>(expected: DeepPartialValueOrMatcher<V>): this
 
   /**
    * Passes if this is the expected type.
@@ -119,7 +129,7 @@ export interface BuiltinMatchers<T> {
    *
    * Note: this will default to using the `ipairs` iterator if another iterator is not provided.
    */
-  toContain<V = InferIterableType<T>>(value: V): this
+  toContain<V = unknown>(value: V): this
 
   /**
    * Passes if this is an array, string, or iterable, and contains the given value.
@@ -128,13 +138,13 @@ export interface BuiltinMatchers<T> {
    *
    * Note: this will default to using the `ipairs` iterator if another iterator is not provided.
    */
-  toContainEqual<V = InferIterableType<T>>(value: DeepValueOrMatcher<V>): this
+  toContainEqual<V = unknown>(value: DeepValueOrMatcher<V>): this
 
   /**
    * Passes if this is a table and contains the provided key.
    * @param key
    */
-  toHaveKey<V = keyof T>(key: V): this
+  toHaveKey<V = unknown>(key: V): this
 
   /**
    * Passes if this is a number and is close to the expected value (within the given delta).
@@ -402,24 +412,28 @@ export interface MockNoSelf<F extends AnySelflessFun> extends BaseMock<F>, Calla
 
 export interface BuiltinMatchers<T> {
   /** Passes if the given mock has been called at least once. */
-  toHaveBeenCalled(this: Matchers<AnyFunction>): this
+  toHaveBeenCalled(): this
 
   /** Passes if the given mock has been called the given number of times. */
-  toHaveBeenCalledTimes(this: Matchers<AnyFunction>, expected: number): this
+  toHaveBeenCalledTimes(expected: number): this
 
   /**
    * Passes if the given mock has been called with the given arguments.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  toHaveBeenCalledWith<A extends any[]>(this: Matchers<(...args: A) => any>, ...args: A): this
+  toHaveBeenCalledWith<A extends any[]>(this: Matchers<(...args: A) => any>, ...args: ValueOrMatcherArgs<A>): this
+
+  toHaveBeenCalledWith(...args: any[]): this
 
   /**
    * Passes if the last call to the given mock has the given arguments.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  toHaveBeenLastCalledWith<A extends any[]>(this: Matchers<(...args: A) => any>, ...args: A): this
+  toHaveBeenLastCalledWith<A extends any[]>(this: Matchers<(...args: A) => any>, ...args: ValueOrMatcherArgs<A>): this
+
+  toHaveBeenLastCalledWith(...args: any[]): this
 
   /**
    * Passes if the nth call to the given mock has the given arguments.
@@ -428,21 +442,31 @@ export interface BuiltinMatchers<T> {
    *
    * Note: if this mock has not been yet called n times, this will fail regardless of if this assertion is negated or not.
    */
-  toHaveBeenNthCalledWith<A extends any[]>(this: Matchers<(...args: A) => any>, n: number, ...args: A): this
+  toHaveBeenNthCalledWith<A extends any[]>(
+    this: Matchers<(...args: A) => any>,
+    n: number,
+    ...args: ValueOrMatcherArgs<A>
+  ): this
+
+  toHaveBeenNthCalledWith(n: number, ...args: any[]): this
 
   /**
    * Passes if the given mock has returned with the given value.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  toHaveReturnedWith<R>(this: Matchers<(...args: any) => R>, value: R): this
+  toHaveReturnedWith<R>(this: Matchers<(...args: any) => R>, value: DeepValueOrMatcher<R>): this
+
+  toHaveReturnedWith(value: unknown): this
 
   /**
    * Passes if the last call to the given mock has returned with the given value.
    *
    * Tables are compared deeply, and asymmetric matchers are supported.
    */
-  toHaveLastReturnedWith<R>(this: Matchers<(...args: any) => R>, value: R): this
+  toHaveLastReturnedWith<R>(this: Matchers<(...args: any) => R>, value: DeepValueOrMatcher<R>): this
+
+  toHaveLastReturnedWith(value: unknown): this
 
   /**
    * Passes if the nth call to the given mock has returned with the given value.
@@ -451,5 +475,7 @@ export interface BuiltinMatchers<T> {
    *
    * Note: if this mock has not been yet called n times, this will fail regardless of if this assertion is negated or not.
    */
-  toHaveNthReturnedWith<R>(this: Matchers<(...args: any) => R>, n: number, value: R): this
+  toHaveNthReturnedWith<R>(this: Matchers<(...args: any) => R>, n: number, value: DeepValueOrMatcher<R>): this
+
+  toHaveLastReturnedWith(n: number, value: unknown): this
 }
