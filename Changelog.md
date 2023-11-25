@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.4.1
+## v0.4.2
 
 - Fix issue with infinitely recursive type in DeepPartialValueOrMatcher
 

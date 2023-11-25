@@ -60,18 +60,20 @@ export type TstlClass = Function
 
 export type ValueOrAsymmetricMatcher<T> = T | AsymmetricMatcher
 export type DeepValueOrMatcher<T> =
+  | T
   | (T extends object
       ? {
           [K in keyof T]: ValueOrAsymmetricMatcher<T[K]>
         }
-      : T)
+      : never)
   | AsymmetricMatcher
 export type DeepPartialValueOrMatcher<T> =
+  | T
   | (T extends object
       ? {
           [K in keyof T]?: ValueOrAsymmetricMatcher<T[K]>
         }
-      : T)
+      : never)
   | AsymmetricMatcher
 
 export type ValueOrMatcherArgs<T> = {
