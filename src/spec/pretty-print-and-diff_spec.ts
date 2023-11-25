@@ -334,7 +334,8 @@ describe("diff", () => {
     }
     const a = setmetatable({ a: 1 }, metatable)
     const b = setmetatable({ a: 1 }, metatable)
+    assert.True(a == b)
     assert.Nil(getDiffString(a, b))
-    assert.equal(`{ a: 1 }`, getDiffString(a, { a: 1 }))
+    assert.equal(`{ a: 2 }`, getDiffString(a, { a: 2 }))
   })
 })

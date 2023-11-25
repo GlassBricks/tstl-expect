@@ -3,7 +3,7 @@ import { match, stringInclude } from "./matchers/string"
 import { closeTo, gt, gte, isNan, lt, lte } from "./matchers/numeric"
 import { contain, containEqual, haveKey, length } from "./matchers/table"
 import { toThrow } from "./matchers/error"
-import { BuiltinMatchers, MatcherChaining, MatcherContext, MatcherMethod, MatcherMethods, Matchers } from "./types"
+import { BuiltinMatchers, MatcherContext, MatcherMethod, MatcherMethods, Matchers } from "./types"
 import {
   called,
   calledTimes,
@@ -14,8 +14,6 @@ import {
   nthReturnedWith,
   returnedWith,
 } from "./matchers/mock-matchers"
-
-const chainingMethods = keySet<MatcherChaining>()
 
 type WrappedMatcherMethod = (this: InternalMatcher, ...args: any[]) => void | unknown
 
@@ -49,7 +47,7 @@ interface InternalMatcher {
 const matcherMt: LuaMetatable<InternalMatcher> = {
   __index(key: string) {
     const context = this._context
-    if (key in chainingMethods) {
+    if (key == "and") {
       context.words.push(key)
       return this
     }
@@ -113,68 +111,38 @@ export type MatcherImpls<K extends keyof Matchers<any>> = {
 
 const builtinMatchers: MatcherImpls<keyof BuiltinMatchers> = {
   toBe,
-  equal,
   toEqual: equal,
-  matchTable,
   toMatchTable: matchTable,
-  a,
   toBeA: a,
-  any,
   toBeAny: any,
-  nil: nilFn,
   toBeNil: nilFn,
-  truthy,
   toBeTruthy: truthy,
-  falsy,
   toBeFalsy: falsy,
-  match,
   toMatch: match,
-  include: stringInclude,
   toInclude: stringInclude,
-  contain,
   toContain: contain,
-  containEqual,
   toContainEqual: containEqual,
-  key: haveKey,
   toHaveKey: haveKey,
-  closeTo,
   toBeCloseTo: closeTo,
-  gt,
   toBeGt: gt,
   toBeGreaterThan: gt,
-  gte,
   toBeGte: gte,
   toBeGreaterThanOrEqual: gte,
-  lt,
   toBeLt: lt,
   toBeLessThan: lt,
-  lte,
   toBeLte: lte,
   toBeLessThanOrEqual: lte,
-  NaN: isNan,
   toBeNaN: isNan,
-  length,
   toHaveLength: length,
-  error: toThrow,
   toError: toThrow,
-  throw: toThrow,
   toThrow: toThrow,
-
-  called,
   toHaveBeenCalled: called,
-  calledTimes,
   toHaveBeenCalledTimes: calledTimes,
-  calledWith,
   toHaveBeenCalledWith: calledWith,
-  lastCalledWith,
   toHaveBeenLastCalledWith: lastCalledWith,
-  nthCalledWith,
   toHaveBeenNthCalledWith: nthCalledWith,
-  returnedWith,
   toHaveReturnedWith: returnedWith,
-  lastReturnedWith,
   toHaveLastReturnedWith: lastReturnedWith,
-  nthReturnedWith,
   toHaveNthReturnedWith: nthReturnedWith,
 }
 

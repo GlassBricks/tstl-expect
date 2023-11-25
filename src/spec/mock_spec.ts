@@ -11,7 +11,7 @@ test("calls", () => {
   const mock = mock1.fnNoSelf()
   mock(1, 2)
   mock(3, 4)
-  expect(mock).to.matchTable({
+  expect(mock).toMatchTable({
     numCalls: 2,
     calls: [
       [1, 2],
@@ -24,7 +24,7 @@ test("calls", () => {
   const mockSelf = mock1.fn()
   mockSelf.call(0, 1, 2)
   mockSelf.call(1, 3, 4)
-  expect(mockSelf).to.matchTable({
+  expect(mockSelf).toMatchTable({
     numCalls: 2,
     calls: [
       [1, 2],
@@ -42,7 +42,7 @@ test("invokes", () => {
   expect(mock(1, 2)).toBe(3)
   expect(mock(3, 4)).toBe(7)
 
-  expect(mock).to.matchTable({
+  expect(mock).toMatchTable({
     numCalls: 2,
     calls: [
       [1, 2],
@@ -61,7 +61,7 @@ test("invokes", () => {
   expect(mockSelf.call(0, 1)).toBe(1)
   expect(mockSelf.call(1, 2)).toBe(3)
 
-  expect(mockSelf).to.matchTable({
+  expect(mockSelf).toMatchTable({
     numCalls: 2,
     calls: [[1], [2]],
     contexts: [0, 1],
@@ -80,7 +80,7 @@ test("invokesOnce", () => {
   mock(5, 7) // -
   mock(3, 4) // +
 
-  expect(mock).to.matchTable({
+  expect(mock).toMatchTable({
     numCalls: 3,
     calls: [
       [2, 3],
@@ -107,7 +107,7 @@ test("invokesOnce", () => {
   mockSelf.call(1, 2) // -
   mockSelf.call(2, 3) // +
 
-  expect(mockSelf).to.matchTable({
+  expect(mockSelf).toMatchTable({
     numCalls: 3,
     calls: [[5], [2], [3]],
     contexts: [3, 1, 2],
@@ -122,7 +122,7 @@ test("clear", () => {
   mock(3, 4)
   mock.clear()
 
-  expect(mock).to.matchTable({
+  expect(mock).toMatchTable({
     numCalls: 0,
     calls: [],
     contexts: [],
@@ -134,7 +134,7 @@ test("clear", () => {
   mockSelf.call(1, 3, 4)
   mockSelf.clear()
 
-  expect(mockSelf).to.matchTable({
+  expect(mockSelf).toMatchTable({
     numCalls: 0,
     calls: [],
     contexts: [],
@@ -160,12 +160,12 @@ describe("spying and stubbing a single", () => {
   test("on", () => {
     const orig = obj.withSelf
     const sp = mock1.on(obj, "withSelf")
-    expect(sp).to.be(obj.withSelf)
+    expect(sp).toBe(obj.withSelf)
 
     obj.withSelf.call(1, 2)
     sp.returnsOnce(10)
     sp.call(3, 4)
-    expect(sp).to.matchTable({
+    expect(sp).toMatchTable({
       numCalls: 2,
       calls: [[2], [4]],
       contexts: [1, 3],
@@ -174,16 +174,16 @@ describe("spying and stubbing a single", () => {
     })
 
     sp.reset()
-    expect(obj.withSelf).not.to.be(sp).and.to.be(orig)
+    expect(obj.withSelf).not.toBe(sp).and.toBe(orig)
   })
 
   test("all", () => {
     const result = mock1.all(obj)
-    expect(result).to.be(obj)
+    expect(result).toBe(obj)
 
     obj.withSelf.call(1, 2)
     result.withSelf.call(3, 4)
-    expect(result.withSelf).to.matchTable({
+    expect(result.withSelf).toMatchTable({
       numCalls: 2,
       calls: [[2], [4]],
       contexts: [1, 3],
@@ -193,7 +193,7 @@ describe("spying and stubbing a single", () => {
 
     obj.withSelf2.call(1, 2)
     result.withSelf2.call(3, 4)
-    expect(result.withSelf2).to.matchTable({
+    expect(result.withSelf2).toMatchTable({
       numCalls: 2,
       calls: [[2], [4]],
       contexts: [1, 3],
@@ -203,13 +203,13 @@ describe("spying and stubbing a single", () => {
 
     mock1.clear(obj)
     // not reset
-    expect(result.withSelf).to.matchTable({
+    expect(result.withSelf).toMatchTable({
       numCalls: 0,
       calls: [],
       contexts: [],
       lastCall: nil,
     })
-    expect(result.withSelf2).to.matchTable({
+    expect(result.withSelf2).toMatchTable({
       numCalls: 0,
       calls: [],
       contexts: [],
@@ -217,7 +217,7 @@ describe("spying and stubbing a single", () => {
     })
 
     mock1.reset(obj)
-    expect(result.withSelf).to.be.a("function")
-    expect(result.withSelf2).to.be.a("function")
+    expect(result.withSelf).toBeA("function")
+    expect(result.withSelf2).toBeA("function")
   })
 })

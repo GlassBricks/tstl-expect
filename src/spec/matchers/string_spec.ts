@@ -1,13 +1,13 @@
 import expect from "../../"
 
-test("to.match", () => {
-  expect("hello").to.match("he.")
+test("toMatch", () => {
+  expect("hello").toMatch("he.")
   const error = assert.error(() => {
-    expect("hello").to.match("heh")
+    expect("hello").toMatch("heh")
   })
   assert.equals(
     error,
-    `expect(received).to.match(expected)
+    `expect(received).toMatch(expected)
 
 Expected pattern: "heh"
 Received string: "hello"`,
@@ -15,13 +15,13 @@ Received string: "hello"`,
 })
 
 test("to.not.match", () => {
-  expect("hello").not.to.match("heh")
+  expect("hello").not.toMatch("heh")
   const error = assert.error(() => {
-    expect("hello").not.to.match("he.")
+    expect("hello").not.toMatch("he.")
   })
   assert.equals(
     error,
-    `expect(received).not.to.match(expected)
+    `expect(received).not.toMatch(expected)
 
 Expected pattern: not "he."
 Received string: "hello"`,
@@ -29,13 +29,13 @@ Received string: "hello"`,
 })
 
 test("to.include", () => {
-  expect("hello").to.include("ell")
+  expect("hello").toInclude("ell")
   const error = assert.error(() => {
-    expect("hello").to.include("eh")
+    expect("hello").toInclude("eh")
   })
   assert.equals(
     error,
-    `expect(received).to.include(expected)
+    `expect(received).toInclude(expected)
 
 Expected substring: "eh"
 Received string: "hello"`,
@@ -43,13 +43,13 @@ Received string: "hello"`,
 })
 
 test("to.not.include", () => {
-  expect("hello").not.to.include("eh")
+  expect("hello").not.toInclude("eh")
   const error = assert.error(() => {
-    expect("hello").not.to.include("ell")
+    expect("hello").not.toInclude("ell")
   })
   assert.equals(
     error,
-    `expect(received).not.to.include(expected)
+    `expect(received).not.toInclude(expected)
 
 Expected substring: not "ell"
 Received string: "hello"`,

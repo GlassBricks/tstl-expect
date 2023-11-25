@@ -4,14 +4,14 @@ import { getDiffString, prettyPrint } from "../../pretty-print-and-diff"
 describe("toBe", () => {
   describe("primitive types", () => {
     test("numbers equal", () => {
-      expect(1).to.be(1)
+      expect(1).toBe(1)
       const error = assert.error(() => {
-        expect(1).to.be(2)
+        expect(1).toBe(2)
       }) as unknown as string
       assert.equals(
         error,
         `
-expect(received).to.be(expected)
+expect(received).toBe(expected)
 
 Expected: 2
 Received: 1
@@ -19,14 +19,14 @@ Received: 1
       )
     })
     test("numbers, not equal", () => {
-      expect(1).not.to.be(2)
+      expect(1).not.toBe(2)
       const error = assert.error(() => {
-        expect(1).not.to.be(1)
+        expect(1).not.toBe(1)
       }) as unknown as string
       assert.equals(
         error,
         `
-expect(received).not.to.be(expected)
+expect(received).not.toBe(expected)
 
 Expected: not 1
 `.trim(),
@@ -34,12 +34,12 @@ Expected: not 1
     })
     test('"1" != 1', () => {
       const error = assert.error(() => {
-        expect("1").to.be(1)
+        expect("1").toBe(1)
       }) as unknown as string
       assert.equals(
         error,
         `
-expect(received).to.be(expected)
+expect(received).toBe(expected)
 
 Expected: 1
 Received: "1"
@@ -47,14 +47,14 @@ Received: "1"
       )
     })
     test("strings equal", () => {
-      expect("hello").to.be("hello")
+      expect("hello").toBe("hello")
       const error = assert.error(() => {
-        expect("hello").to.be("world")
+        expect("hello").toBe("world")
       })
       assert.equals(
         error,
         `
-expect(received).to.be(expected)
+expect(received).toBe(expected)
 
 Expected: "world"
 Received: "hello"
@@ -62,14 +62,14 @@ Received: "hello"
       )
     })
     test("strings, not equal", () => {
-      expect("hello").not.to.be("world")
+      expect("hello").not.toBe("world")
       const error = assert.error(() => {
-        expect("hello").not.to.be("hello")
+        expect("hello").not.toBe("hello")
       }) as unknown as string
       assert.equals(
         error,
         `
-expect(received).not.to.be(expected)
+expect(received).not.toBe(expected)
 
 Expected: not "hello"
 `.trim(),
@@ -105,11 +105,11 @@ Values have no visual difference, but are not reference-equal. Use .equal() to d
       expect({}).not.toBe({})
       const obj = {}
       const error = assert.error(() => {
-        expect(obj).not.to.be(obj)
+        expect(obj).not.toBe(obj)
       }) as unknown as string
       assert.equals(
         error,
-        `expect(received).not.to.be(expected)\nUsing reference (rawequal) equality\n\n` +
+        `expect(received).not.toBe(expected)\nUsing reference (rawequal) equality\n\n` +
           `Expected: not [] (${tostring(obj)})`,
       )
     })
@@ -159,28 +159,28 @@ Values have no visual difference, but are not reference-equal. Use .equal() to d
 
 describe("equal and objectMatch", () => {
   test("primitives", () => {
-    expect(1).to.equal(1)
+    expect(1).toEqual(1)
     const error = assert.error(() => {
-      expect(1).to.equal(2)
+      expect(1).toEqual(2)
     }) as unknown as string
     assert.equals(
       error,
       `
-expect(received).to.equal(expected)
+expect(received).toEqual(expected)
 
 Expected: 2
 Received: 1
 `.trim(),
     )
 
-    expect(1).not.to.equal(2)
+    expect(1).not.toEqual(2)
     const error2 = assert.error(() => {
-      expect(1).not.to.equal(1)
+      expect(1).not.toEqual(1)
     })
     assert.equals(
       error2,
       `
-expect(received).not.to.equal(expected)
+expect(received).not.toEqual(expected)
 
 Expected: not 1
 `.trim(),
@@ -188,15 +188,15 @@ Expected: not 1
   })
 
   test("table equality", () => {
-    expect({ a: 2 }).to.equal({ a: 2 })
+    expect({ a: 2 }).toEqual({ a: 2 })
 
     const error = assert.error(() => {
-      expect({ a: 2 }).to.equal({ a: 3 })
+      expect({ a: 2 }).toEqual({ a: 3 })
     }) as unknown as string
     assert.equals(
       error,
       `
-expect(received).to.equal(expected)
+expect(received).toEqual(expected)
 
 Expected: { a: 3 }
 Received: {
@@ -207,12 +207,12 @@ Received: {
 
     // extra keys
     const error2 = assert.error(() => {
-      expect({ a: 2, b: 3 }).to.equal({ a: 2 })
+      expect({ a: 2, b: 3 }).toEqual({ a: 2 })
     })
     assert.equals(
       error2,
       `
-expect(received).to.equal(expected)
+expect(received).toEqual(expected)
 
 Expected: { a: 2 }
 Received: {
@@ -223,12 +223,12 @@ Received: {
     )
     // missing keys
     const error3 = assert.error(() => {
-      expect({ a: 2 }).to.equal({ a: 2, b: 3 })
+      expect({ a: 2 }).toEqual({ a: 2, b: 3 })
     }) as unknown as string
     assert.equals(
       error3,
       `
-expect(received).to.equal(expected)
+expect(received).toEqual(expected)
 
 Expected: { a: 2, b: 3 }
 Received: {
@@ -239,9 +239,9 @@ Received: {
     )
 
     const fn = () => 0
-    expect(fn).to.equal(fn) // can't deep compare, but ok if same reference
+    expect(fn).toEqual(fn) // can't deep compare, but ok if same reference
 
-    expect({ fn }).to.equal({ fn })
+    expect({ fn }).toEqual({ fn })
 
     const obj1 = {
       a: 1,
@@ -265,16 +265,16 @@ Received: {
         },
       },
     }
-    expect(obj1).to.equal(obj2)
+    expect(obj1).toEqual(obj2)
 
     obj2.c.f.g = 5
     const error4 = assert.error(() => {
-      expect(obj1).to.equal(obj2)
+      expect(obj1).toEqual(obj2)
     }) as unknown as string
     assert.equals(
       error4,
       `
-expect(received).to.equal(expected)
+expect(received).toEqual(expected)
 
 Expected: ${prettyPrint(obj2)}
 Received: ${getDiffString(obj2, obj1)!}
@@ -283,14 +283,14 @@ Received: ${getDiffString(obj2, obj1)!}
   })
 
   test("table equality, not", () => {
-    expect({ a: 2 }).not.to.equal({ a: 3 })
+    expect({ a: 2 }).not.toEqual({ a: 3 })
     const error = assert.error(() => {
-      expect({ a: 2 }).not.to.equal({ a: 2 })
+      expect({ a: 2 }).not.toEqual({ a: 2 })
     })
     assert.equals(
       error,
       `
-expect(received).not.to.equal(expected)
+expect(received).not.toEqual(expected)
 
 Expected: not { a: 2 }
 `.trim(),
@@ -298,12 +298,12 @@ Expected: not { a: 2 }
 
     const fn = () => 0
     const error2 = assert.error(() => {
-      expect(fn).not.to.equal(fn)
+      expect(fn).not.toEqual(fn)
     })
     assert.equals(
       error2,
       `
-expect(received).not.to.equal(expected)
+expect(received).not.toEqual(expected)
 
 Expected: not [${tostring(fn)}]
 `.trim(),
@@ -311,15 +311,15 @@ Expected: not [${tostring(fn)}]
   })
 
   test("matchTable", () => {
-    expect({ a: 2, b: 3 }).to.matchTable({ a: 2 })
-    expect({ a: 2, b: 3 }).to.matchTable({ a: 2, b: 3 })
+    expect({ a: 2, b: 3 }).toMatchTable({ a: 2 })
+    expect({ a: 2, b: 3 }).toMatchTable({ a: 2, b: 3 })
     const error = assert.error(() => {
-      expect({ a: 2 }).to.matchTable({ a: 2, b: 4 })
+      expect({ a: 2 }).toMatchTable({ a: 2, b: 4 })
     })
     assert.equals(
       error,
       `
-expect(received).to.matchTable(expected)
+expect(received).toMatchTable(expected)
 
 Expected: { a: 2, b: 4 }
 Received: {
@@ -330,14 +330,14 @@ Received: {
     )
   })
   test("not.matchTable", () => {
-    expect({ a: 2, b: 3 }).not.to.matchTable({ a: 2, b: 4 })
+    expect({ a: 2, b: 3 }).not.toMatchTable({ a: 2, b: 4 })
     const error = assert.error(() => {
-      expect({ a: 2, b: 3 }).not.to.matchTable({ a: 2 })
+      expect({ a: 2, b: 3 }).not.toMatchTable({ a: 2 })
     })
     assert.equals(
       error,
       `
-expect(received).not.to.matchTable(expected)
+expect(received).not.toMatchTable(expected)
 
 Expected: not { a: 2 }
 Received: { a: 2, b: 3 }
@@ -346,16 +346,16 @@ Received: { a: 2, b: 3 }
   })
 
   test("with matchers", () => {
-    expect({ a: 2 }).to.equal({ a: expect.anything() })
-    expect({ a: 2 }).to.equal({ a: expect.any("number") })
+    expect({ a: 2 }).toEqual({ a: expect.anything() })
+    expect({ a: 2 }).toEqual({ a: expect.any("number") })
 
     const error = assert.error(() => {
-      expect({ a: 2 }).to.equal({ a: expect.any("string") })
+      expect({ a: 2 }).toEqual({ a: expect.any("string") })
     }) as unknown as string
     assert.equals(
       error,
       `
-expect(received).to.equal(expected)
+expect(received).toEqual(expected)
 
 Expected: { a: expect.any("string") }
 Received: {
@@ -367,19 +367,19 @@ Received: {
 })
 
 test("to.be.a", () => {
-  expect(1).to.be.a("number")
-  expect("hello").to.be.a("string")
-  expect({}).to.be.a("table")
-  expect(() => 0).to.be.a("function")
+  expect(1).toBeA("number")
+  expect("hello").toBeA("string")
+  expect({}).toBeA("table")
+  expect(() => 0).toBeA("function")
 
-  expect(1).not.to.be.a("string")
+  expect(1).not.toBeA("string")
 
   const error = assert.error(() => {
-    expect(1).to.be.a("string")
+    expect(1).toBeA("string")
   })
   assert.equals(
     error,
-    `expect(received).to.be.a(expected)
+    `expect(received).toBeA(expected)
 
 Expected: a string
 Received: 1
@@ -387,14 +387,14 @@ Received: 1
   )
 
   class Foo {}
-  expect(new Foo()).to.be.a(Foo)
+  expect(new Foo()).toBeA(Foo)
   const error2 = assert.error(() => {
-    expect("foo").to.be.a(Foo)
+    expect("foo").toBeA(Foo)
   })
   assert.equals(
     error2,
     `
-expect(received).to.be.a(expected)
+expect(received).toBeA(expected)
 
 Expected: an instance of Foo
 Received: "foo"
@@ -403,16 +403,16 @@ Received: "foo"
 })
 
 test("any", () => {
-  expect(1).to.be.any()
-  expect("hello").to.be.any()
-  expect(nil).to.not.be.any()
+  expect(1).toBeAny()
+  expect("hello").toBeAny()
+  expect(nil).not.toBeAny()
   const error = assert.error(() => {
-    expect(nil).to.be.any()
+    expect(nil).toBeAny()
   }) as unknown as string
   assert.equals(
     error,
     `
-expect(received).to.be.any()
+expect(received).toBeAny()
 
 Received: nil
 `.trim(),
@@ -420,15 +420,15 @@ Received: nil
 })
 
 test("nil", () => {
-  expect(nil).to.be.nil()
-  expect(1).to.not.be.nil()
+  expect(nil).toBeNil()
+  expect(1).not.toBeNil()
   const error = assert.error(() => {
-    expect(1).to.be.nil()
+    expect(1).toBeNil()
   }) as unknown as string
   assert.equals(
     error,
     `
-expect(received).to.be.nil()
+expect(received).toBeNil()
 
 Received: 1
 `.trim(),
@@ -436,18 +436,18 @@ Received: 1
 })
 
 test("truthy", () => {
-  expect(1).to.be.truthy()
-  expect("hello").to.be.truthy()
-  expect(true).to.be.truthy()
-  expect(nil).to.not.be.truthy()
-  expect(false).to.not.be.truthy()
+  expect(1).toBeTruthy()
+  expect("hello").toBeTruthy()
+  expect(true).toBeTruthy()
+  expect(nil).not.toBeTruthy()
+  expect(false).not.toBeTruthy()
   const error = assert.error(() => {
-    expect(nil).to.be.truthy()
+    expect(nil).toBeTruthy()
   }) as unknown as string
   assert.equals(
     error,
     `
-expect(received).to.be.truthy()
+expect(received).toBeTruthy()
 
 Received: nil
 `.trim(),
@@ -455,18 +455,18 @@ Received: nil
 })
 
 test("falsy", () => {
-  expect(nil).to.be.falsy()
-  expect(false).to.be.falsy()
-  expect(1).to.not.be.falsy()
-  expect(0).to.not.be.falsy() // lua!
-  expect("").not.to.be.falsy()
+  expect(nil).toBeFalsy()
+  expect(false).toBeFalsy()
+  expect(1).not.toBeFalsy()
+  expect(0).not.toBeFalsy() // lua!
+  expect("").not.toBeFalsy()
   const error = assert.error(() => {
-    expect(1).to.be.falsy()
+    expect(1).toBeFalsy()
   }) as unknown as string
   assert.equals(
     error,
     `
-expect(received).to.be.falsy()
+expect(received).toBeFalsy()
 
 Received: 1
 `.trim(),
