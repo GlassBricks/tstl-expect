@@ -338,4 +338,14 @@ describe("diff", () => {
     assert.Nil(getDiffString(a, b))
     assert.equal(`{ a: 2 }`, getDiffString(a, { a: 2 }))
   })
+
+  test("can ignore metatable __eq if allowExtraKeys is true", () => {
+    const metatable: LuaMetatable<any> = {
+      __eq(other) {
+        return this.a == other.a
+      },
+    }
+    const a = setmetatable({ a: 1, b: 2 }, metatable)
+    assert.equal(nil, getDiffString({ b: 2 }, a, true))
+  })
 })

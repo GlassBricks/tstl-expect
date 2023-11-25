@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.4
+
+- .toMatchTable() now works even on tables having metatables with __eq.
+
 ## v0.4.2
 
 - Fix issue with infinitely recursive type in DeepPartialValueOrMatcher

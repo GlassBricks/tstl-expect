@@ -329,6 +329,11 @@ Received: {
 `.trim(),
     )
   })
+  test("toMatchTable with metatable", () => {
+    const obj = setmetatable({ a: 2 }, { __eq: () => false })
+    expect(obj).not.toEqual({ a: 2 })
+    expect(obj).toMatchTable({ a: 2 })
+  })
   test("not.matchTable", () => {
     expect({ a: 2, b: 3 }).not.toMatchTable({ a: 2, b: 4 })
     const error = assert.error(() => {
@@ -387,6 +392,7 @@ Received: 1
   )
 
   class Foo {}
+
   expect(new Foo()).toBeA(Foo)
   const error2 = assert.error(() => {
     expect("foo").toBeA(Foo)

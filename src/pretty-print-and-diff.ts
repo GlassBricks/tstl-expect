@@ -66,6 +66,7 @@ function doPrettyPrint(obj: unknown, indent: string, depth: number, refs: LuaMap
   }
   return `[${tostring(obj)}]`
 }
+
 function isNumber(this: unknown, key: unknown): key is number {
   return type(key) == "number"
 }
@@ -164,6 +165,7 @@ function printNormalTable(
 }
 
 const getmeta = debug.getmetatable
+
 /**
  * Returns:
  *
@@ -186,10 +188,12 @@ function doGetDiff(
   const expectedType = type(expected)
   const actualType = type(actual)
   if (expectedType == "table" && actualType == "table") {
-    const meta = getmeta(expected)
-    if (meta && (meta.__eq || (meta as any).__pairs)) return true
-    const meta2 = getmeta(actual)
-    if (meta2 && (meta2.__eq || (meta2 as any).__pairs)) return true
+    if (!allowExtraKeys) {
+      const meta = getmeta(expected)
+      if (meta && (meta.__eq || (meta as any).__pairs)) return true
+      const meta2 = getmeta(actual)
+      if (meta2 && (meta2.__eq || (meta2 as any).__pairs)) return true
+    }
 
     return getTableDiff(expected as LuaTable, actual as LuaTable, curIndent, depth, expectedRefs, allowExtraKeys)
   }
@@ -291,6 +295,7 @@ export function getDiffString(expected: unknown, actual: unknown, allowExtraKeys
   if (diff == true) return prettyPrint(actual, 1)
   return diff
 }
+
 export function deepCompare(expected: unknown, actual: unknown, allowExtraKeys = false): boolean {
   return doGetDiff(expected, actual, "", MAX_DEPTH, new LuaMap(), allowExtraKeys) == nil
 }
