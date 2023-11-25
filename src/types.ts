@@ -69,7 +69,7 @@ export type DeepValueOrMatcher<T> =
 export type DeepPartialValueOrMatcher<T> =
   | (T extends object
       ? {
-          [K in keyof T]?: DeepPartialValueOrMatcher<T[K]>
+          [K in keyof T]?: ValueOrAsymmetricMatcher<T[K]>
         }
       : T)
   | AsymmetricMatcher
