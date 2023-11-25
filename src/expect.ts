@@ -135,7 +135,7 @@ export type MatcherImpls<K extends keyof Matchers<any>> = {
 
 // builtin assertions
 
-const builtinMatchers: MatcherImpls<keyof BuiltinMatchers> = {
+const builtinMatchers: MatcherImpls<keyof BuiltinMatchers<any>> = {
   toBe,
   toEqual: equal,
   toMatchTable: matchTable,
