@@ -1,7 +1,7 @@
 {
   "name": "tstl-expect",
   "license": "MIT",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "types": "./dist/index",
   "main": "./dist/index",
   "files": [
