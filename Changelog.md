@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.0
+- Only support "full phrase" matchers (e.g. `toBeCalled()`), to simplify the API and increase parity with Jest.
+- Mocks now support lua multi-return.
+- Added optional type arguments to various matcher functions.
+
 ## v0.3.2
 
 - Equal keys in diff strings are sorted.
