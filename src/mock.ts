@@ -3,36 +3,51 @@
 import {
   AnyContextualFun,
   AnySelflessFun,
+  ArrayWithN,
   BaseMock,
-  CalledParams,
   MockNoSelf,
   MockWithContext,
+  MultiReturnFun,
   UnknownContextualFun,
   UnknownSelflessFun,
 } from "./types"
 import { isCallable } from "./utils"
+import { pack, unpack } from "./pack"
 
-const argsMetatable: LuaMetatable<CalledParams> = {
+const argsMetatable: LuaMetatable<ArrayWithN> = {
   __len() {
     return this.n
   },
 }
+
+function returnsImpl(...values: any[]) {
+  const n = select("#", ...values)
+  if (n == 1) {
+    const [value] = [...values]
+    return () => value
+  } else {
+    const arr = pack(...values)
+    return () => unpack(arr)
+  }
+}
+
 class MockImpl implements BaseMock<AnySelflessFun> {
   declare _isMockFunction: true
-  private _implementation: AnySelflessFun | undefined = nil
-  private _onceImplementations: AnySelflessFun[] = []
+  private _implementation: MultiReturnFun | undefined = nil
+  private _onceImplementations: MultiReturnFun[] = []
 
   private _mockName: string = "mockFunction"
 
   numCalls = 0
 
-  calls: CalledParams[] = []
+  calls: ArrayWithN[] = []
 
-  lastCall?: CalledParams
+  lastCall?: ArrayWithN
 
   contexts: any[] = []
 
   returnValues: unknown[] = []
+  multiReturnValues: ArrayWithN[] = []
 
   constructor(
     readonly hasSelfParam: boolean,
@@ -57,8 +72,10 @@ class MockImpl implements BaseMock<AnySelflessFun> {
     setmetatable(this.returnValues, {
       __len: () => this.numCalls,
     })
+    this.multiReturnValues = []
     return this
   }
+
   reset(): void {
     if (this.originalTable) {
       this.originalTable[this.originalKey!] = this.originalImplementation
@@ -86,12 +103,13 @@ class MockImpl implements BaseMock<AnySelflessFun> {
     return this
   }
 
-  returns(value: ReturnType<AnySelflessFun>): this {
-    this._implementation = () => value
+  returns(...values: unknown[]): this {
+    this._implementation = returnsImpl(...values)
     return this
   }
-  returnsOnce(value: ReturnType<AnySelflessFun>): this {
-    this._onceImplementations.push(() => value)
+
+  returnsOnce(...values: unknown[]): this {
+    this._onceImplementations.push(returnsImpl(...values))
     return this
   }
 
@@ -99,19 +117,20 @@ class MockImpl implements BaseMock<AnySelflessFun> {
     this._mockName = name
     return this
   }
+
   getMockName(): string {
     return this._mockName
   }
 
-  __call(...allArgs: unknown[]): unknown {
+  __call(...allArgs: unknown[]): LuaMultiReturn<unknown[]> {
     let context: unknown | undefined
-    let args: CalledParams
+    let args: ArrayWithN
     let n = select("#", ...allArgs)
     if (!this.hasSelfParam) {
-      args = [...allArgs] as CalledParams
+      args = [...allArgs] as ArrayWithN
     } else {
       ;[context] = [...allArgs]
-      args = select(2, ...allArgs) as unknown as CalledParams
+      args = select(2, ...allArgs) as unknown as ArrayWithN
       n--
     }
     args.n = n
@@ -125,17 +144,21 @@ class MockImpl implements BaseMock<AnySelflessFun> {
 
     this.numCalls++
 
-    const impl = this._onceImplementations.shift() ?? this._implementation ?? (() => nil)
+    const impl = this._onceImplementations.shift() ?? this._implementation ?? (() => $multi())
 
-    const result = impl(...allArgs) // may throw
-    this.returnValues[curIndex] = result
-    return result
+    const result = pack(...impl(...allArgs)) // may throw
+    setmetatable(result, argsMetatable)
+    const firstResult = result[0]
+    this.multiReturnValues[curIndex] = result
+    this.returnValues[curIndex] = firstResult
+    return unpack(result)
   }
 
   __tostring(): string {
     return this._mockName
   }
 }
+
 MockImpl.prototype._isMockFunction = true
 
 function doMockOn(table: any, key: any, hasSelfParam: boolean, stubOut: boolean): MockImpl {
@@ -158,6 +181,7 @@ export namespace mock {
   export function fn<F extends AnyContextualFun = UnknownContextualFun>(impl?: F): MockWithContext<F> {
     return new MockImpl(true, impl, nil, nil, nil) as any
   }
+
   /**
    * Creates a mock function WITHOUT a self parameter.
    *

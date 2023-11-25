@@ -78,7 +78,7 @@ export type ValueOrMatcherArgs<T> = {
   [K in keyof T]: ValueOrAsymmetricMatcher<T[K]>
 }
 
-export interface BuiltinMatchers<T> {
+export interface BuiltinMatchers {
   /**
    * Passes if this equals the expected value, using rawequal equality.
    */
@@ -195,7 +195,7 @@ export interface BuiltinMatchers<T> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface,@typescript-eslint/no-unused-vars
-export interface Matchers<T> extends BuiltinMatchers<T> {}
+export interface Matchers<T> extends BuiltinMatchers {}
 
 /** @noSelf */
 export interface AsymmetricMatcherFuncs {
@@ -282,6 +282,13 @@ export interface Expect extends ExpectMatchers {
 
 type AnyFunction = (...args: any) => any
 
+type FirstReturnType<F extends AnyFunction> = F extends (...args: any) => LuaMultiReturn<[first: infer R, ...args: any]>
+  ? R
+  : ReturnType<F>
+type ReturnTypes<F extends AnyFunction> = F extends (...args: any) => LuaMultiReturn<[...args: infer R]>
+  ? R
+  : [ReturnType<F>]
+
 /**
  * The type for mocks, both with and without the self parameter.
  */
@@ -293,12 +300,12 @@ export interface BaseMock<F extends AnyFunction> {
   /**
    * The calls of this mock. Does not include the self parameter (if any).
    */
-  readonly calls: CalledParams<Parameters<F>>[]
+  readonly calls: ArrayWithN<Parameters<F>>[]
 
   /**
    * The last call of this mock. Does not include the self parameter (if any).
    */
-  readonly lastCall?: CalledParams<Parameters<F>>
+  readonly lastCall?: ArrayWithN<Parameters<F>>
 
   /**
    * The self parameter of the last call of this mock. If this mock does not include the self parameter, this is always an empty table.
@@ -308,9 +315,11 @@ export interface BaseMock<F extends AnyFunction> {
   /**
    * The return values of this mock.
    *
-   * This currently does not support multi-return values.
+   * In the case of multi-return values, this only includes the first return value.
    */
-  readonly returnValues: ReturnType<F>[]
+  readonly returnValues: FirstReturnType<F>[]
+
+  readonly multiReturnValues: ReturnTypes<F>[]
 
   /**
    * The number of times this mock has been called.
@@ -345,14 +354,13 @@ export interface BaseMock<F extends AnyFunction> {
 
   /**
    * Short for `invokes(() => value)`.
-   * @param value
    */
-  returns(value: ReturnType<F>): this
+  returns(...values: ReturnTypes<F>): this
 
   /**
    * Short for `invokesOnce(() => value)`.
    */
-  returnsOnce(value: ReturnType<F>): this
+  returnsOnce(...values: ReturnTypes<F>): this
 
   /**
    * Gets the current implementation of this mock (not including invokesOnce implementations).
@@ -373,12 +381,13 @@ export interface BaseMock<F extends AnyFunction> {
   getMockName(): string
 }
 
-export type CalledParams<T extends any[] = unknown[]> = T & {
+export type ArrayWithN<T extends any[] = unknown[]> = T & {
   n: number
 }
 
 export type AnySelflessFun = (this: void, ...args: any) => any
 export type AnyContextualFun = (this: any, ...args: any) => any
+export type MultiReturnFun = (this: void, ...args: any) => LuaMultiReturn<unknown[]>
 
 export type UnknownSelflessFun = (this: void, ...args: unknown[]) => unknown
 export type UnknownContextualFun = (this: unknown, ...args: unknown[]) => unknown
@@ -410,7 +419,7 @@ export interface MockNoSelf<F extends AnySelflessFun> extends BaseMock<F>, Calla
   (this: void, ...args: Parameters<F>): ReturnType<F>
 }
 
-export interface BuiltinMatchers<T> {
+export interface BuiltinMatchers {
   /** Passes if the given mock has been called at least once. */
   toHaveBeenCalled(): this
 

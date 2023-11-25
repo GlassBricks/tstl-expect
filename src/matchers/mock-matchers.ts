@@ -1,4 +1,4 @@
-import { BaseMock, CalledParams, MatcherContext } from "../types"
+import { BaseMock, ArrayWithN, MatcherContext } from "../types"
 import { mock } from "../mock"
 import { deepCompare, getDiffString, prettyPrint } from "../pretty-print-and-diff"
 import { assertIsNonNegativeInteger, assertIsPositiveInteger } from "./utils"
@@ -73,11 +73,11 @@ function printValuesAtIndices<T>(
   return lines.join("\n")
 }
 
-function printCalls(calls: CalledParams[]): string {
+function printCalls(calls: ArrayWithN[]): string {
   return printValues(calls, calls.length, printArgs, "calls")
 }
 
-function callsEqual(expected: CalledParams, actual: CalledParams): boolean {
+function callsEqual(expected: ArrayWithN, actual: ArrayWithN): boolean {
   for (const i of $range(1, math.max(expected.n, actual.n))) {
     if (!deepCompare(expected[i - 1], actual[i - 1])) {
       return false
@@ -86,7 +86,7 @@ function callsEqual(expected: CalledParams, actual: CalledParams): boolean {
   return true
 }
 
-function getCallDiff(expected: CalledParams, actual: CalledParams): string {
+function getCallDiff(expected: ArrayWithN, actual: ArrayWithN): string {
   const result: string[] = []
   let hasAnyDiff = false
   for (const i of $range(1, math.max(expected.n, actual.n))) {
@@ -105,17 +105,17 @@ function getCallDiff(expected: CalledParams, actual: CalledParams): string {
     return ret
   }
 }
-function printCallsComparing(calls: CalledParams[], expected: CalledParams): string {
+function printCallsComparing(calls: ArrayWithN[], expected: ArrayWithN): string {
   return printValues(calls, calls.length, (call) => getCallDiff(expected, call), "calls")
 }
 
-function printCallsAtIndices(calls: CalledParams[], indices: number[], highlightIndex: number | undefined): string {
+function printCallsAtIndices(calls: ArrayWithN[], indices: number[], highlightIndex: number | undefined): string {
   return printValuesAtIndices(calls, calls.length, indices, printArgs, "calls", highlightIndex)
 }
 
 function printCallsAtIndicesComparing(
-  calls: CalledParams[],
-  expected: CalledParams,
+  calls: ArrayWithN[],
+  expected: ArrayWithN,
   indices: number[],
   highlightIndex: number | undefined,
 ): string {

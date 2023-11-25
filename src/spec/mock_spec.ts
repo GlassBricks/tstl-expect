@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import expect, { mock as mock1 } from ".."
 
+require("busted.runner")()
+
 test("name", () => {
   const mock = mock1.fn()
   mock.mockName("test")
@@ -114,6 +116,96 @@ test("invokesOnce", () => {
     lastCall: [3],
     returnValues: [15, -1, 5],
   })
+})
+
+test("returns", () => {
+  const mock = mock1.fnNoSelf()
+  mock.returns(10)
+
+  expect(mock()).toBe(10)
+
+  mock.returnsOnce(20)
+  mock.returnsOnce(30)
+  expect(mock()).toBe(20)
+  expect(mock()).toBe(30)
+  expect(mock()).toBe(10)
+})
+
+test("multi returns", () => {
+  const mock = mock1.fnNoSelf<(this: void) => LuaMultiReturn<unknown[]>>()
+  mock.returns(10, 20)
+  expect(mock()).toEqual([10, 20])
+
+  mock.returnsOnce(30, 40)
+  mock.returnsOnce(50)
+  expect(mock()).toEqual([30, 40])
+  expect(mock()).toEqual([50])
+  expect(mock()).toEqual([10, 20])
+
+  expect(mock).toMatchTable({
+    numCalls: 4,
+    calls: [[], [], [], []],
+    contexts: [],
+    lastCall: [],
+    multiReturnValues: [[10, 20], [30, 40], [50], [10, 20]],
+    returnValues: [10, 30, 50, 10],
+  })
+})
+
+test("call values have n field", () => {
+  const mock = mock1.fnNoSelf()
+  mock(1, 2)
+  mock(nil, nil, 5)
+  mock()
+  expect(mock.calls[0])
+    .toEqual({
+      1: 1,
+      2: 2,
+      n: 2,
+    })
+    .toHaveLength(2)
+  expect(mock.calls[1])
+    .toEqual({
+      1: nil,
+      2: nil,
+      3: 5,
+      n: 3,
+    })
+    .toHaveLength(3)
+  expect(mock.calls[2])
+    .toEqual({
+      n: 0,
+    })
+    .toHaveLength(0)
+})
+test("return values have n field", () => {
+  const mock = mock1.fnNoSelf<() => LuaMultiReturn<unknown[]>>()
+  mock.returnsOnce(1, 2)
+  mock.returnsOnce(nil, nil, 5)
+  mock.returnsOnce()
+  mock()
+  mock()
+  mock()
+  expect(mock.multiReturnValues[0])
+    .toEqual({
+      1: 1,
+      2: 2,
+      n: 2,
+    })
+    .toHaveLength(2)
+  expect(mock.multiReturnValues[1])
+    .toEqual({
+      1: nil,
+      2: nil,
+      3: 5,
+      n: 3,
+    })
+    .toHaveLength(3)
+  expect(mock.multiReturnValues[2])
+    .toEqual({
+      n: 0,
+    })
+    .toHaveLength(0)
 })
 
 test("clear", () => {

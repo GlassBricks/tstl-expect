@@ -1,17 +1,17 @@
-import { CalledParams } from "./types"
+import { ArrayWithN } from "./types"
 
-type Pack = (this: void, ...args: unknown[]) => CalledParams
-
-let pack = (table as any).pack as Pack
+let pack: (this: void, ...args: any[]) => ArrayWithN = (table as any).pack as any
 
 if (!pack) {
   const sel = select
-  pack = (...args: unknown[]): CalledParams => {
+  pack = (...args: unknown[]): ArrayWithN => {
     const n = sel("#", ...args)
-    const result = [...args] as CalledParams
+    const result = [...args] as ArrayWithN
     result.n = n
     return result
   }
 }
 
-export { pack }
+const unpack: <T extends any[]>(this: void, list: T) => LuaMultiReturn<T> = (table as any).unpack ?? _G.unpack
+
+export { pack, unpack }
