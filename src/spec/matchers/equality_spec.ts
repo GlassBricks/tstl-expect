@@ -472,3 +472,19 @@ Received: 1
 `.trim(),
   )
 })
+
+test("comment", () => {
+  const error = assert.error(() => {
+    expect(3).comment("hi").toBe(2)
+  })
+  assert.equals(
+    error,
+    `
+hi
+expect(received).toBe(expected)
+
+Expected: 2
+Received: 3
+`.trim(),
+  )
+})

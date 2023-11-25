@@ -24,13 +24,30 @@ const TOBE_MATCHER = "toBe"
 class InternalMatcherContext implements MatcherContext {
   words: string[] = []
   isNot = false
+  userComment: string = ""
+
   constructor(public subject: unknown) {}
+
   matcherHint(comment?: string, expected: string = "expected", received: string = "received") {
     if (comment) {
-      return string.format("expect(%s)%s(%s)\n%s", received, this.words.map((w) => `.${w}`).join(""), expected, comment)
+      return string.format(
+        "%sexpect(%s)%s(%s)\n%s",
+        this.userComment,
+        received,
+        this.words.map((w) => `.${w}`).join(""),
+        expected,
+        comment,
+      )
     }
-    return string.format("expect(%s)%s(%s)", received, this.words.map((w) => `.${w}`).join(""), expected)
+    return string.format(
+      "%sexpect(%s)%s(%s)",
+      this.userComment,
+      received,
+      this.words.map((w) => `.${w}`).join(""),
+      expected,
+    )
   }
+
   fail(message?: string, comment?: string, expected?: string, received?: string): never {
     const hint = this.matcherHint(comment, expected, received)
     error(hint + "\n\n" + (message ?? "Assertion failed"), 4)
@@ -41,9 +58,11 @@ class InternalMatcherContext implements MatcherContext {
     return newChainedMatcher(this, value)
   }
 }
+
 interface InternalMatcher {
   _context: InternalMatcherContext
 }
+
 const matcherMt: LuaMetatable<InternalMatcher> = {
   __index(key: string) {
     const context = this._context
@@ -55,6 +74,12 @@ const matcherMt: LuaMetatable<InternalMatcher> = {
       context.isNot = !context.isNot
       context.words.push(key)
       return this
+    }
+    if (key == "comment") {
+      return (comment: string) => {
+        this._context.userComment = comment + "\n"
+        return this
+      }
     }
     const method = matcherMethods.get(key)
     if (method) {
@@ -83,6 +108,7 @@ function newChainedMatcher<T>(context: InternalMatcherContext, subject: T): Matc
   const assertion: InternalMatcher = { _context: newContext }
   return setmetatable(assertion, matcherMt) as unknown as Matchers<T>
 }
+
 export function addMatcherMethod(name: string, method: MatcherMethod<any>): void {
   if (matcherMethods.has(name)) {
     error(`Assertion method '${name}' already exists`)

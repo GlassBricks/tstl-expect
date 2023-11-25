@@ -42,10 +42,11 @@ export interface Matchers<T> {
   /** Inverts the assertion. */
   not: this
 
-  /**
-   * Allows chaining of assertions.
-   */
+  /** Allows chaining of assertions. */
   and: this
+
+  /** Adds a comment to the assertion. This will be displayed in the error message. */
+  comment(message: string): this
 
   /** Gets the subject of the assertion. */
   getValue(): T
