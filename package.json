@@ -34,6 +34,7 @@
   },
   "scripts": {
     "build": "tstl -p tsconfig.json",
+    "watch": "tstl -p tsconfig.json --watch",
     "test": "yarn build && busted -C dist",
     "clean": "del-cli dist",
     "build:release": "tstl -p tsconfig-release.json",
