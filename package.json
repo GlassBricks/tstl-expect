@@ -35,10 +35,11 @@
   "scripts": {
     "build": "tstl -p tsconfig.json",
     "watch": "tstl -p tsconfig.json --watch",
-    "test": "yarn build && busted -C dist",
+    "test": "npm run build && busted -C dist",
     "clean": "del-cli dist",
     "build:release": "tstl -p tsconfig-release.json",
-    "prepack": "yarn clean && yarn build:release"
+    "prepublishOnly": "npm run test",
+    "prepack": "npm run clean && npm run build:release"
   },
-  "packageManager": "yarn@3.3.0"
+  "packageManager": "npm@10.3.0"
 }
