@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.5
+
+- Fallback to `getmetatable` if `debug.getmetatable` is not available.
+
 ## v0.4.4
 
 - .toMatchTable() now works even on tables having metatables with __eq.

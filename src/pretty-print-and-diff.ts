@@ -164,7 +164,7 @@ function printNormalTable(
   }
 }
 
-const getmeta = debug.getmetatable
+const getmeta = debug.getmetatable ?? getmetatable
 
 /**
  * Returns:
