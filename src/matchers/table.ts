@@ -7,12 +7,13 @@ import { MatcherContext } from "../types"
 export function length(this: MatcherContext, received: unknown, expected: unknown): void {
   assertIsNumber(this, expected, "Expected")
   let length: number
-  if (type(received) == "string") {
+  const receivedType = type(received);
+  if (receivedType == "string") {
     length = (received as string).length
-  } else if (type(received) == "table") {
+  } else if (receivedType == "table" || receivedType == "userdata") {
     length = (received as LuaTable).length()
   } else {
-    this.fail("Received value should be a string or a table, got " + type(received))
+    this.fail("Received value should be a string, table, or userdata, got " + receivedType)
   }
   const pass = length == expected
   if (pass != this.isNot) return

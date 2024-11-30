@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.6
+
+- Allow using "userdata" in place of "table" as subject in toEqual and toMatch.
+
 ## v0.4.5
 
 - Fallback to `getmetatable` if `debug.getmetatable` is not available.

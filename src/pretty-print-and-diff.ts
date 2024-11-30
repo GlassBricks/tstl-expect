@@ -187,7 +187,7 @@ function doGetDiff(
   }
   const expectedType = type(expected)
   const actualType = type(actual)
-  if (expectedType == "table" && actualType == "table") {
+  if (expectedType == "table" && (actualType == "table" || actualType == "userdata")) {
     if (!allowExtraKeys) {
       const meta = getmeta(expected)
       if (meta && (meta.__eq || (meta as any).__pairs)) return true
@@ -249,8 +249,9 @@ function getTableDiff(
       }
     }
   }
-  for (const [key, value] of pairs(actual)) {
-    if (expected.get(key) == nil) {
+  if (type(actual) == "table") {
+    for (const [key, value] of pairs(actual)) {
+      if (expected.get(key) != nil) continue
       if (allowExtraKeys) {
         equalKeys.push(key)
       } else if (depthExceeded) {

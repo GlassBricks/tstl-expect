@@ -35,7 +35,7 @@ export interface MatcherContext {
 }
 
 /** A Custom assertion method. */
-export type MatcherMethod<T> = (this: MatcherContext, subject: T, ...args: any[]) => void | unknown
+export type MatcherMethod<T> = (this: MatcherContext, subject: T, ...args: any[]) => void
 export type MatcherMethods = Record<string, MatcherMethod<any>>
 
 export interface Matchers<T> {
@@ -188,15 +188,15 @@ export interface BuiltinMatchers {
    *
    * Returns a new Assertion on the thrown error, or the returned value if this is negated.
    */
-  toError(this: Matchers<() => unknown>, message?: string | unknown): Matchers<unknown>
+  toError(this: Matchers<() => unknown>, message?: unknown): Matchers<unknown>
 
   /**
    * Alias for {@link toError}
    */
-  toThrow(this: Matchers<() => unknown>, message?: string | unknown): Matchers<unknown>
+  toThrow(this: Matchers<() => unknown>, message?: unknown): Matchers<unknown>
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface,@typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface Matchers<T> extends BuiltinMatchers {}
 
 /** @noSelf */
